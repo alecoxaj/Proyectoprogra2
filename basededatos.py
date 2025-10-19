@@ -38,3 +38,12 @@ def crear_base_datos():
             FOREIGN KEY (servicio_id) REFERENCES servicios(id)
         )
         """)
+
+    cursor.execute("""
+        INSERT OR IGNORE INTO usuarios (nombre, usuario, contraseña, rol)
+        VALUES ('Administrador', 'admin', '1234', 'admin')
+        """)
+
+    conexion.commit()
+    conexion.close()
+    print("Base de datos creada correctamente (espacio_creativo.db)")
