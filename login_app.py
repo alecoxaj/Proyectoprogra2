@@ -51,3 +51,25 @@ def iniciar_sesion():
         ventana_principal(rol)
     else:
         messagebox.showerror("Error", "Usuario o contraseña incorrectos")
+
+root = tk.Tk()
+root.title("Login - Espacio Creativo")
+root.geometry("350x250")
+root.config(bg="#dfe3ee")
+
+tk.Label(root, text="Inicio de sesión", font=("Arial", 16, "bold"), bg="#dfe3ee").pack(pady=10)
+
+tk.Label(root, text="Usuario:", bg="#dfe3ee").pack()
+entry_usuario = tk.Entry(root, width=30)
+entry_usuario.pack()
+
+tk.Label(root, text="Contraseña:", bg="#dfe3ee").pack()
+entry_contraseña = tk.Entry(root, width=30, show="*")
+entry_contraseña.pack()
+
+tk.Button(root, text="Ingresar", command=iniciar_sesion, bg="#a7c7e7", relief="groove").pack(pady=15)
+
+tk.Label(root, text="Usuario: admin | Contraseña: 1234", font=("Arial", 8), bg="#dfe3ee").pack(side="bottom", pady=10)
+
+print("Commit: Interfaz de login inicializada.")
+root.mainloop()
