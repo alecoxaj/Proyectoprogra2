@@ -36,3 +36,18 @@ def ventana_principal(rol):
     tk.Button(ventana, text="Cerrar sesión", command=ventana.destroy, bg="#f8d7da").pack(pady=20)
     print(f"Commit: Menú cargado para el rol '{rol}'.")
 
+def iniciar_sesion():
+    usuario = entry_usuario.get()
+    contraseña = entry_contraseña.get()
+
+    if not usuario or not contraseña:
+        messagebox.showwarning("Campos vacíos", "Por favor ingresa usuario y contraseña.")
+        print("Commit: Intento de inicio sin datos completos.")
+        return
+
+    rol = verificar_login(usuario, contraseña)
+    if rol:
+        messagebox.showinfo("Acceso concedido", f"Bienvenido al sistema ({rol})")
+        ventana_principal(rol)
+    else:
+        messagebox.showerror("Error", "Usuario o contraseña incorrectos")
