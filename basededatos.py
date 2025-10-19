@@ -27,3 +27,14 @@ def crear_base_datos():
             FOREIGN KEY (servicio_id) REFERENCES servicios(id)
         )
         """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS ventas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cliente_id INTEGER NOT NULL,
+            servicio_id INTEGER NOT NULL,
+            fecha TEXT NOT NULL,
+            total REAL NOT NULL,
+            FOREIGN KEY (cliente_id) REFERENCES clientes(id),
+            FOREIGN KEY (servicio_id) REFERENCES servicios(id)
+        )
+        """)
