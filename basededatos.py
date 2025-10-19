@@ -68,5 +68,6 @@ def crear_base_datos():
     conexion.close()
     print("Base de datos creada correctamente (espacio_creativo.db)")
 
+
 if __name__ == "__main__":
     crear_base_datos()
