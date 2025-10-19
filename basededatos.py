@@ -16,3 +16,14 @@ def crear_base_datos():
         )
         """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS agenda (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cliente_id INTEGER NOT NULL,
+            servicio_id INTEGER NOT NULL,
+            fecha TEXT NOT NULL,
+            estado TEXT DEFAULT 'Pendiente',
+            FOREIGN KEY (cliente_id) REFERENCES clientes(id),
+            FOREIGN KEY (servicio_id) REFERENCES servicios(id)
+        )
+        """)
