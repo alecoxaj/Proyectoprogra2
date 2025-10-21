@@ -71,5 +71,5 @@ tk.Button(root, text="Ingresar", command=iniciar_sesion, bg="#a7c7e7", relief="g
 
 tk.Label(root, text="Usuario: admin | Contraseña: 1234", font=("Arial", 8), bg="#dfe3ee").pack(side="bottom", pady=10)
 
-print("Commit: Interfaz de login inicializada.")
+print("Interfaz de login inicializada.")
 root.mainloop()
