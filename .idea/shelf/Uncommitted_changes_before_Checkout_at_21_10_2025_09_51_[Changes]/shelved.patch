@@ -1,0 +1,19 @@
+Index: login_app.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import tkinter as tk\r\nfrom tkinter import messagebox\r\nimport sqlite3\r\n\r\nDB_PATH = \"espacio_creativo.db\"\r\n\r\ndef verificar_login(usuario, contraseña):\r\n    conexion = sqlite3.connect(DB_PATH)\r\n    cursor = conexion.cursor()\r\n    cursor.execute(\"SELECT rol FROM usuarios WHERE usuario=? AND contraseña=?\", (usuario, contraseña))\r\n    resultado = cursor.fetchone()\r\n    conexion.close()\r\n    if resultado:\r\n        print(f\"Usuario '{usuario}' inició sesión como {resultado[0]}.\")\r\n        return resultado[0]\r\n    else:\r\n        print(f\"Intento fallido de inicio de sesión con usuario '{usuario}'.\")\r\n        return None\r\n\r\ndef ventana_principal(rol):\r\n    ventana = tk.Toplevel()\r\n    ventana.title(\"Menú Principal - Espacio Creativo\")\r\n    ventana.geometry(\"400x250\")\r\n    ventana.config(bg=\"#f4f4f4\")\r\n\r\n    tk.Label(ventana, text=f\"Bienvenido, rol: {rol}\", font=(\"Arial\", 14, \"bold\"), bg=\"#f4f4f4\").pack(pady=20)\r\n\r\n    if rol == \"admin\":\r\n        opciones = [\"Gestión de Usuarios\", \"Clientes\", \"Servicios\", \"Agenda\", \"Ventas\", \"Reportes\"]\r\n    else:\r\n        opciones = [\"Clientes\", \"Agenda\", \"Ventas\"]\r\n\r\n    for opcion in opciones:\r\n        tk.Button(ventana, text=opcion, width=25, bg=\"#cfe2f3\", relief=\"groove\").pack(pady=5)\r\n\r\n    tk.Button(ventana, text=\"Cerrar sesión\", command=ventana.destroy, bg=\"#f8d7da\").pack(pady=20)\r\n    print(f\"Commit: Menú cargado para el rol '{rol}'.\")\r\n\r\ndef iniciar_sesion():\r\n    usuario = entry_usuario.get()\r\n    contraseña = entry_contraseña.get()\r\n\r\n    if not usuario or not contraseña:\r\n        messagebox.showwarning(\"Campos vacíos\", \"Por favor ingresa usuario y contraseña.\")\r\n        print(\"Commit: Intento de inicio sin datos completos.\")\r\n        return\r\n\r\n    rol = verificar_login(usuario, contraseña)\r\n    if rol:\r\n        messagebox.showinfo(\"Acceso concedido\", f\"Bienvenido al sistema ({rol})\")\r\n        ventana_principal(rol)\r\n    else:\r\n        messagebox.showerror(\"Error\", \"Usuario o contraseña incorrectos\")\r\n\r\nroot = tk.Tk()\r\nroot.title(\"Login - Espacio Creativo\")\r\nroot.geometry(\"350x250\")\r\nroot.config(bg=\"#dfe3ee\")\r\n\r\ntk.Label(root, text=\"Inicio de sesión\", font=(\"Arial\", 16, \"bold\"), bg=\"#dfe3ee\").pack(pady=10)\r\n\r\ntk.Label(root, text=\"Usuario:\", bg=\"#dfe3ee\").pack()\r\nentry_usuario = tk.Entry(root, width=30)\r\nentry_usuario.pack()\r\n\r\ntk.Label(root, text=\"Contraseña:\", bg=\"#dfe3ee\").pack()\r\nentry_contraseña = tk.Entry(root, width=30, show=\"*\")\r\nentry_contraseña.pack()\r\n\r\ntk.Button(root, text=\"Ingresar\", command=iniciar_sesion, bg=\"#a7c7e7\", relief=\"groove\").pack(pady=15)\r\n\r\ntk.Label(root, text=\"Usuario: admin | Contraseña: 1234\", font=(\"Arial\", 8), bg=\"#dfe3ee\").pack(side=\"bottom\", pady=10)\r\n\r\nprint(\"Commit: Interfaz de login inicializada.\")\r\nroot.mainloop()
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/login_app.py b/login_app.py
+--- a/login_app.py	(revision f64a875e485e7ce984e3e8fbc8e96354096155c0)
++++ b/login_app.py	(date 1761061832130)
+@@ -5,7 +5,7 @@
+ DB_PATH = "espacio_creativo.db"
+ 
+ def verificar_login(usuario, contraseña):
+-    conexion = sqlite3.connect(DB_PATH)
++    conexion = sqlite3.connect(r"C:\Users\aleja\PycharmProjects\Proyectoprogra2\espacio_creativo.db")
+     cursor = conexion.cursor()
+     cursor.execute("SELECT rol FROM usuarios WHERE usuario=? AND contraseña=?", (usuario, contraseña))
+     resultado = cursor.fetchone()
