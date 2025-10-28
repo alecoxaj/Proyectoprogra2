@@ -45,3 +45,28 @@ def ventana_servicios():
             tabla.insert("", tk.END, values=fila)
         conn.close()
         print("Commit: Datos de servicios cargados.")
+
+    def agregar_servicio():
+        n = entry_nombre.get().strip()
+        p = entry_precio.get().strip()
+        if not n:
+            messagebox.showwarning("Validación", "El nombre es obligatorio.")
+            return
+        try:
+            precio_val = float(p) if p else 0.0
+        except ValueError:
+            messagebox.showwarning("Validación", "Precio inválido.")
+            return
+        conn = conectar()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO servicios (nombre, descripcion, precio) VALUES (?, ?, ?)",
+                    (n, entry_descripcion.get().strip(), precio_val))
+        conn.commit()
+        conn.close()
+        print("Commit: Servicio agregado.")
+        cargar_datos()
+        entry_nombre.delete(0, tk.END)
+        entry_descripcion.delete(0, tk.END)
+        entry_precio.delete(0, tk.END)
+
+    tk.Button(ventana, text="Agregar", bg="#a8e6cf", command=agregar_servicio).grid(row=3, column=0, padx=5, pady=8)
