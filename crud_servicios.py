@@ -82,25 +82,3 @@ def ventana_servicios():
         print("Commit: Servicio seleccionado para edición.")
 
     tabla.bind("<<TreeviewSelect>>", on_seleccionar)
-
-    def actualizar_servicio():
-        sel = tabla.selection()
-        if not sel:
-            messagebox.showwarning("Advertencia", "Selecciona un servicio para actualizar.")
-            return
-        servicio_id = tabla.item(sel[0])["values"][0]
-        try:
-            precio_val = float(entry_precio.get().strip()) if entry_precio.get().strip() else 0.0
-        except ValueError:
-            messagebox.showwarning("Validación", "Precio inválido.")
-            return
-        conn = conectar()
-        cur = conn.cursor()
-        cur.execute("UPDATE servicios SET nombre=?, descripcion=?, precio=? WHERE id=?",
-                    (entry_nombre.get().strip(), entry_descripcion.get().strip(), precio_val, servicio_id))
-        conn.commit()
-        conn.close()
-        print("Commit: Servicio actualizado.")
-        cargar_datos()
-
-    tk.Button(ventana, text="Actualizar", bg="#ffd3b6", command=actualizar_servicio).grid(row=3, column=1, padx=5, pady=8)
