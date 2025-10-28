@@ -1,0 +1,84 @@
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"3f81e3ea-3605-471d-be61-ca1e917d045f\" name=\"Changes\" comment=\"\" />\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\r\n      <map>\r\n        <entry key=\"$PROJECT_DIR$\" value=\"Marvin\" />\r\n      </map>\r\n    </option>\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;Marvin7715&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/alecoxaj/Proyectoprogra2.git&quot;,\r\n    &quot;accountId&quot;: &quot;5fabb84a-196b-44b6-9467-fd802a3512a6&quot;\r\n  }\r\n}</component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 8\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"34GJZWXSow8CmTvwjyakWkKdVaJ\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,\r\n    &quot;Python.basededatos.executor&quot;: &quot;Run&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\r\n    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RunManager\">\r\n    <configuration name=\"basededatos\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"ProyectoProgra2\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/basededatos.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"Python.basededatos\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-python-sdk-598b0484d0b5-e2d783800521-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-251.26927.74\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"3f81e3ea-3605-471d-be61-ca1e917d045f\" name=\"Changes\" comment=\"\" />\r\n      <created>1760834031527</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1760834031527</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"Módulo de login con Tkinter y verificación SQLite&quot;\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1760835334227</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1760835334227</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"ImportO Tkinter y sqlite3 y se define la ruta de la base de datos.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1760835461748</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1760835461748</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Se implemento la funcion verificar_login() que consulta rol en SQLite.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1760835790811</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1760835790811</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Se creo la funcion, ventana_principal() con menú dinámico por rol\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1760836709404</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1760836709404</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"Se implemento la funcion iniciar_sesion() con validación y mensajes.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1760837591142</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1760837591142</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00006\" summary=\"Se construyo el layout de login con entradas y botón Ingresar.\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1760838604109</created>\r\n      <option name=\"number\" value=\"00006\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1760838604109</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00007\" summary=\"“Merge: incorporar base de datos (ParteAlejandro) a rama de integración.”\">\r\n      <option name=\"closed\" value=\"true\" />\r\n      <created>1760839737903</created>\r\n      <option name=\"number\" value=\"00007\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1760839737903</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"8\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State />\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <MESSAGE value=\"Módulo de login con Tkinter y verificación SQLite&quot;\" />\r\n    <MESSAGE value=\"ImportO Tkinter y sqlite3 y se define la ruta de la base de datos.\" />\r\n    <MESSAGE value=\"Se implemento la funcion verificar_login() que consulta rol en SQLite.\" />\r\n    <MESSAGE value=\"Se creo la funcion, ventana_principal() con menú dinámico por rol\" />\r\n    <MESSAGE value=\"Se implemento la funcion iniciar_sesion() con validación y mensajes.\" />\r\n    <MESSAGE value=\"Se construyo el layout de login con entradas y botón Ingresar.\" />\r\n    <MESSAGE value=\"“Merge: incorporar base de datos (ParteAlejandro) a rama de integración.”\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"“Merge: incorporar base de datos (ParteAlejandro) a rama de integración.”\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision a6aad65638282dc4c115bf9c9997d5727979b8c1)
++++ b/.idea/workspace.xml	(date 1761663122771)
+@@ -4,7 +4,7 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="3f81e3ea-3605-471d-be61-ca1e917d045f" name="Changes" comment="" />
++    <list default="true" id="3f81e3ea-3605-471d-be61-ca1e917d045f" name="Changes" comment="Se creo módulo crud_clientes.py con interfaz Tkinter y se agrego funciones CRUD (crear, leer, actualizar, eliminar) de clientes." />
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+@@ -45,17 +45,18 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent">{
+-  &quot;keyToString&quot;: {
+-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+-    &quot;Python.basededatos.executor&quot;: &quot;Run&quot;,
+-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
++  <component name="PropertiesComponent"><![CDATA[{
++  "keyToString": {
++    "ModuleVcsDetector.initialDetectionPerformed": "true",
++    "Python.basededatos.executor": "Run",
++    "RunOnceActivity.ShowReadmeOnStart": "true",
++    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
++    "RunOnceActivity.git.unshallow": "true",
++    "git-widget-placeholder": "ParteAlejandro",
++    "ignore.virus.scanning.warn.message": "true",
++    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+   }
+-}</component>
++}]]></component>
+   <component name="RunManager">
+     <configuration name="basededatos" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+       <module name="ProyectoProgra2" />
+@@ -88,7 +89,7 @@
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>
+-        <option value="bundled-python-sdk-598b0484d0b5-e2d783800521-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-251.26927.74" />
++        <option value="bundled-python-sdk-657d8234b839-64d779b69b7a-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26927.74" />
+       </set>
+     </attachedChunks>
+   </component>
+@@ -156,7 +157,15 @@
+       <option name="project" value="LOCAL" />
+       <updated>1760839737903</updated>
+     </task>
+-    <option name="localTasksCounter" value="8" />
++    <task id="LOCAL-00008" summary="Se creo módulo crud_clientes.py con interfaz Tkinter y se agrego funciones CRUD (crear, leer, actualizar, eliminar) de clientes.">
++      <option name="closed" value="true" />
++      <created>1761662776624</created>
++      <option name="number" value="00008" />
++      <option name="presentableId" value="LOCAL-00008" />
++      <option name="project" value="LOCAL" />
++      <updated>1761662776624</updated>
++    </task>
++    <option name="localTasksCounter" value="9" />
+     <servers />
+   </component>
+   <component name="Vcs.Log.Tabs.Properties">
+@@ -178,6 +187,7 @@
+     <MESSAGE value="Se implemento la funcion iniciar_sesion() con validación y mensajes." />
+     <MESSAGE value="Se construyo el layout de login con entradas y botón Ingresar." />
+     <MESSAGE value="“Merge: incorporar base de datos (ParteAlejandro) a rama de integración.”" />
+-    <option name="LAST_COMMIT_MESSAGE" value="“Merge: incorporar base de datos (ParteAlejandro) a rama de integración.”" />
++    <MESSAGE value="Se creo módulo crud_clientes.py con interfaz Tkinter y se agrego funciones CRUD (crear, leer, actualizar, eliminar) de clientes." />
++    <option name="LAST_COMMIT_MESSAGE" value="Se creo módulo crud_clientes.py con interfaz Tkinter y se agrego funciones CRUD (crear, leer, actualizar, eliminar) de clientes." />
+   </component>
+ </project>
+\ No newline at end of file
