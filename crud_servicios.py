@@ -35,3 +35,13 @@ def ventana_servicios():
     scrollbar = ttk.Scrollbar(ventana, orient="vertical", command=tabla.yview)
     tabla.configure(yscroll=scrollbar.set)
     scrollbar.grid(row=5, column=3, sticky="ns", pady=10)
+
+    def cargar_datos():
+        tabla.delete(*tabla.get_children())
+        conn = conectar()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM servicios")
+        for fila in cur.fetchall():
+            tabla.insert("", tk.END, values=fila)
+        conn.close()
+        print("Commit: Datos de servicios cargados.")
