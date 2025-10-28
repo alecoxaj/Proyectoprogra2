@@ -70,3 +70,15 @@ def ventana_servicios():
         entry_precio.delete(0, tk.END)
 
     tk.Button(ventana, text="Agregar", bg="#a8e6cf", command=agregar_servicio).grid(row=3, column=0, padx=5, pady=8)
+
+    def on_seleccionar(event):
+        sel = tabla.selection()
+        if not sel:
+            return
+        valores = tabla.item(sel[0])["values"]
+        entry_nombre.delete(0, tk.END); entry_nombre.insert(0, valores[1])
+        entry_descripcion.delete(0, tk.END); entry_descripcion.insert(0, valores[2])
+        entry_precio.delete(0, tk.END); entry_precio.insert(0, valores[3])
+        print("Commit: Servicio seleccionado para edición.")
+
+    tabla.bind("<<TreeviewSelect>>", on_seleccionar)
