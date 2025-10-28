@@ -24,3 +24,14 @@ def ventana_servicios():
     tk.Label(ventana, text="Precio:").grid(row=2, column=0, padx=5, pady=5, sticky="e")
     entry_precio = tk.Entry(ventana, width=20)
     entry_precio.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+
+    cols = ("id", "nombre", "descripcion", "precio")
+    tabla = ttk.Treeview(ventana, columns=cols, show="headings", height=10)
+    for col in cols:
+        tabla.heading(col, text=col.capitalize())
+        tabla.column(col, width=150 if col!="descripcion" else 260)
+    tabla.grid(row=5, column=0, columnspan=3, padx=10, pady=10, sticky="nsew")
+
+    scrollbar = ttk.Scrollbar(ventana, orient="vertical", command=tabla.yview)
+    tabla.configure(yscroll=scrollbar.set)
+    scrollbar.grid(row=5, column=3, sticky="ns", pady=10)
