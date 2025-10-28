@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import messagebox
 import sqlite3
 
+from crud_clientes import ventana_clientes
+from crud_servicios import ventana_servicios
+
 DB_PATH = "espacio_creativo.db"
 
 def verificar_login(usuario, contraseña):
@@ -11,7 +14,7 @@ def verificar_login(usuario, contraseña):
     resultado = cursor.fetchone()
     conexion.close()
     if resultado:
-        print(f"Usuario '{usuario}' inició sesión como {resultado[0]}.")
+        print(f"Commit: Usuario '{usuario}' inició sesión como {resultado[0]}.")
         return resultado[0]
     else:
         print(f"Intento fallido de inicio de sesión con usuario '{usuario}'.")
@@ -31,10 +34,15 @@ def ventana_principal(rol):
         opciones = ["Clientes", "Agenda", "Ventas"]
 
     for opcion in opciones:
-        tk.Button(ventana, text=opcion, width=25, bg="#cfe2f3", relief="groove").pack(pady=5)
+        if opcion == "Clientes":
+            tk.Button(ventana, text=opcion, width=25, bg="#cfe2f3", relief="groove", command=ventana_clientes).pack(pady=5)
+        elif opcion == "Servicios":
+            tk.Button(ventana, text=opcion, width=25, bg="#cfe2f3", relief="groove", command=ventana_servicios).pack(pady=5)
+        else:
+            tk.Button(ventana, text=opcion, width=25, bg="#cfe2f3", relief="groove").pack(pady=5)
 
     tk.Button(ventana, text="Cerrar sesión", command=ventana.destroy, bg="#f8d7da").pack(pady=20)
-    print(f"Commit: Menú cargado para el rol '{rol}'.")
+    print(f"Menú cargado para el rol '{rol}'.")
 
 def iniciar_sesion():
     usuario = entry_usuario.get()
@@ -42,7 +50,7 @@ def iniciar_sesion():
 
     if not usuario or not contraseña:
         messagebox.showwarning("Campos vacíos", "Por favor ingresa usuario y contraseña.")
-        print("Commit: Intento de inicio sin datos completos.")
+        print("Intento de inicio sin datos completos.")
         return
 
     rol = verificar_login(usuario, contraseña)
