@@ -9,6 +9,7 @@ def conectar():
     return sqlite3.connect(DB_PATH)
 
 
+
 def ventana_clientes():
     ventana = tk.Toplevel()
     ventana.title("Gestión de Clientes - Espacio Creativo")
