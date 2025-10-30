@@ -47,7 +47,7 @@ def ventana_clientes():
         for fila in cur.fetchall():
             tabla.insert("", tk.END, values=fila)
         conn.close()
-        print("Commit: Datos de clientes cargados.")
+        print("Datos de clientes cargados.")
 
     def agregar_cliente():
         conn = conectar()
@@ -57,7 +57,7 @@ def ventana_clientes():
         conn.commit()
         conn.close()
         messagebox.showinfo("Éxito", "Cliente agregado correctamente")
-        print("Commit: Nuevo cliente agregado.")
+        print("Nuevo cliente agregado.")
         cargar_datos()
 
     def eliminar_cliente():
@@ -71,7 +71,7 @@ def ventana_clientes():
         cur.execute("DELETE FROM clientes WHERE id=?", (cliente_id,))
         conn.commit()
         conn.close()
-        print("Commit: Cliente eliminado.")
+        print("Cliente eliminado.")
         cargar_datos()
 
     def actualizar_cliente():
@@ -87,7 +87,7 @@ def ventana_clientes():
         """, (nombre.get(), correo.get(), telefono.get(), tipo.get(), cliente_id))
         conn.commit()
         conn.close()
-        print("Commit: Cliente actualizado.")
+        print("Cliente actualizado.")
         cargar_datos()
 
     tk.Button(ventana, text="Agregar", bg="#a8e6cf", command=agregar_cliente).grid(row=4, column=0, padx=5, pady=5)
