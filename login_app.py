@@ -1,11 +1,9 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, PhotoImage
 import sqlite3
 
-from crud_clientes import ventana_clientes
-from crud_servicios import ventana_servicios
-
 DB_PATH = "espacio_creativo.db"
+
 
 def verificar_login(usuario, contraseña):
     conexion = sqlite3.connect(DB_PATH)
@@ -13,6 +11,7 @@ def verificar_login(usuario, contraseña):
     cursor.execute("SELECT rol FROM usuarios WHERE usuario=? AND contraseña=?", (usuario, contraseña))
     resultado = cursor.fetchone()
     conexion.close()
+
     if resultado:
         print(f"Usuario '{usuario}' inició sesión como {resultado[0]}.")
         return resultado[0]
@@ -20,29 +19,46 @@ def verificar_login(usuario, contraseña):
         print(f"Intento fallido de inicio de sesión con usuario '{usuario}'.")
         return None
 
+
 def ventana_principal(rol):
     ventana = tk.Toplevel()
     ventana.title("Menú Principal - Espacio Creativo")
-    ventana.geometry("400x250")
-    ventana.config(bg="#f4f4f4")
+    ventana.geometry("400x350")
+    ventana.config(bg="#ffa420")
 
-    tk.Label(ventana, text=f"Bienvenido, rol: {rol}", font=("Arial", 14, "bold"), bg="#f4f4f4").pack(pady=20)
+    tk.Label(
+        ventana,
+        text=f"Bienvenido, rol: {rol}",
+        font=("Arial", 14, "bold"),
+        bg="#ffa420"
+    ).pack(pady=20)
 
     if rol == "admin":
         opciones = ["Gestión de Usuarios", "Clientes", "Servicios", "Agenda", "Ventas", "Reportes"]
     else:
         opciones = ["Clientes", "Agenda", "Ventas"]
 
-    for opcion in opciones:
-        if opcion == "Clientes":
-            tk.Button(ventana, text=opcion, width=25, bg="#cfe2f3", relief="groove", command=ventana_clientes).pack(pady=5)
-        elif opcion == "Servicios":
-            tk.Button(ventana, text=opcion, width=25, bg="#cfe2f3", relief="groove", command=ventana_servicios).pack(pady=5)
-        else:
-            tk.Button(ventana, text=opcion, width=25, bg="#cfe2f3", relief="groove").pack(pady=5)
 
-    tk.Button(ventana, text="Cerrar sesión", command=ventana.destroy, bg="#f8d7da").pack(pady=20)
+    for opcion in opciones:
+        tk.Button(
+            ventana,
+            text=opcion,
+            width=25,
+            bg="#fff3cd",
+            relief="groove",
+            font=("Arial", 10)
+        ).pack(pady=5)
+
+
+    tk.Button(
+        ventana,
+        text="Cerrar sesión",
+        command=ventana.destroy,
+        bg="#f8d7da"
+    ).pack(pady=20)
+
     print(f"Menú cargado para el rol '{rol}'.")
+
 
 def iniciar_sesion():
     usuario = entry_usuario.get()
@@ -60,24 +76,69 @@ def iniciar_sesion():
     else:
         messagebox.showerror("Error", "Usuario o contraseña incorrectos")
 
+
 root = tk.Tk()
 root.title("Login - Espacio Creativo")
-root.geometry("350x250")
-root.config(bg="#dfe3ee")
+root.geometry("900x600")
+root.config(bg="#faeecb")
+root.resizable(False, False)
 
-tk.Label(root, text="Inicio de sesión", font=("Arial", 16, "bold"), bg="#dfe3ee").pack(pady=10)
 
-tk.Label(root, text="Usuario:", bg="#dfe3ee").pack()
-entry_usuario = tk.Entry(root, width=30)
-entry_usuario.pack()
+try:
+    logo = PhotoImage(file="Espacio.blanco.png")
+    logo = logo.subsample(3)
+    tk.Label(root, image=logo, bg="#faeecb").pack(pady=(40, 10))
+except Exception as e:
+    print("No se pudo cargar el logo:", e)
 
-tk.Label(root, text="Contraseña:", bg="#dfe3ee").pack()
-entry_contraseña = tk.Entry(root, width=30, show="*")
-entry_contraseña.pack()
+frame = tk.Frame(root, bg="#ffe08a", bd=0, highlightthickness=4, highlightbackground="#f6b100")
+frame.pack(pady=10)
+frame.config(width=500, height=300)
+frame.pack_propagate(False)
 
-tk.Button(root, text="Ingresar", command=iniciar_sesion, bg="#a7c7e7", relief="groove").pack(pady=15)
 
-tk.Label(root, text="Usuario: admin | Contraseña: 1234", font=("Arial", 8), bg="#dfe3ee").pack(side="bottom", pady=10)
+tk.Label(
+    frame,
+    text="Inicio de sesión",
+    font=("Arial", 16, "bold"),
+    bg="#ffe08a",
+    fg="#333"
+).pack(pady=(20, 15))
+
+
+tk.Label(frame, text="Usuario:", font=("Arial", 12), bg="#ffe08a", fg="#333").pack()
+entry_usuario = tk.Entry(frame, font=("Arial", 12), width=30, relief="flat", bd=3, justify="center")
+entry_usuario.pack(pady=5)
+
+
+tk.Label(frame, text="Contraseña:", font=("Arial", 12), bg="#ffe08a", fg="#333").pack()
+entry_contraseña = tk.Entry(frame, font=("Arial", 12), width=30, show="*", relief="flat", bd=3, justify="center")
+entry_contraseña.pack(pady=5)
+
+
+tk.Button(
+    frame,
+    text="Ingresar",
+    font=("Arial", 12, "bold"),
+    bg="#f6b100",
+    fg="white",
+    activebackground="#e0a000",
+    activeforeground="white",
+    relief="flat",
+    width=15,
+    height=1,
+    command=iniciar_sesion
+).pack(pady=20)
+
+# Texto inferior
+tk.Label(
+    frame,
+    text="Usuario: admin  |  Contraseña: 1234",
+    font=("Arial", 9),
+    bg="#ffe08a",
+    fg="#7a5900"
+).pack()
+
 
 print("Interfaz de login inicializada.")
 root.mainloop()
