@@ -97,6 +97,7 @@ frame.config(width=500, height=300)
 frame.pack_propagate(False)
 
 
+
 tk.Label(
     frame,
     text="Inicio de sesión",
