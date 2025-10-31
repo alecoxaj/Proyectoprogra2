@@ -14,7 +14,7 @@ def verificar_login(usuario, contraseña):
     resultado = cursor.fetchone()
     conexion.close()
     if resultado:
-        print(f"Commit: Usuario '{usuario}' inició sesión como {resultado[0]}.")
+        print(f"Usuario '{usuario}' inició sesión como {resultado[0]}.")
         return resultado[0]
     else:
         print(f"Intento fallido de inicio de sesión con usuario '{usuario}'.")

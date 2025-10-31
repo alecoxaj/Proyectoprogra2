@@ -74,7 +74,7 @@ def ventana_servicios():
                     (n, entry_descripcion.get().strip(), precio_val))
         conn.commit()
         conn.close()
-        print("Commit: Servicio agregado.")
+        print("Servicio agregado.")
 
         cargar_datos()
         entry_nombre.delete(0, tk.END)
@@ -139,4 +139,4 @@ def ventana_servicios():
 
     cargar_datos()
 
-    print("Commit: Módulo crud_servicios inicializado.")
+    print("Módulo crud_servicios inicializado.")

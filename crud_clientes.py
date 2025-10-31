@@ -14,7 +14,6 @@ def ventana_clientes():
     ventana.geometry("600x400")
     ventana.config(bg="#f0f0f0")
 
-
     tk.Label(ventana, text="Nombre:").grid(row=0, column=0, padx=5, pady=5)
     nombre = tk.Entry(ventana, width=30)
     nombre.grid(row=0, column=1)
@@ -31,12 +30,10 @@ def ventana_clientes():
     tipo = tk.Entry(ventana, width=30)
     tipo.grid(row=3, column=1)
 
-
     tabla = ttk.Treeview(ventana, columns=("id", "nombre", "correo", "telefono", "tipo_servicio"), show="headings")
     for col in tabla["columns"]:
         tabla.heading(col, text=col.capitalize())
     tabla.grid(row=6, column=0, columnspan=4, padx=10, pady=10)
-
 
 
     def cargar_datos():
@@ -47,7 +44,6 @@ def ventana_clientes():
         for fila in cur.fetchall():
             tabla.insert("", tk.END, values=fila)
         conn.close()
-        print("Commit: Datos de clientes cargados.")
 
     def agregar_cliente():
         conn = conectar()
@@ -57,7 +53,6 @@ def ventana_clientes():
         conn.commit()
         conn.close()
         messagebox.showinfo("Éxito", "Cliente agregado correctamente")
-        print("Commit: Nuevo cliente agregado.")
         cargar_datos()
 
     def eliminar_cliente():
@@ -71,7 +66,6 @@ def ventana_clientes():
         cur.execute("DELETE FROM clientes WHERE id=?", (cliente_id,))
         conn.commit()
         conn.close()
-        print("Commit: Cliente eliminado.")
         cargar_datos()
 
     def actualizar_cliente():
@@ -87,7 +81,6 @@ def ventana_clientes():
         """, (nombre.get(), correo.get(), telefono.get(), tipo.get(), cliente_id))
         conn.commit()
         conn.close()
-        print("Commit: Cliente actualizado.")
         cargar_datos()
 
     tk.Button(ventana, text="Agregar", bg="#a8e6cf", command=agregar_cliente).grid(row=4, column=0, padx=5, pady=5)
