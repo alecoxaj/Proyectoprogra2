@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from PIL import Image, ImageTk
 import sqlite3
 
 from crud.crud_clientes import ClientesView
@@ -109,17 +110,20 @@ root.title("Login - Espacio Creativo")
 root.geometry("800x600")
 root.config(bg=COLOR_FONDO_VENTANA)
 
-tk.Label(root, text="ESPACIO",
-         font=("Arial", 22, "bold"),
-         bg=COLOR_FONDO_VENTANA,
-         fg=COLOR_TEXTO_OSCURO).pack(pady=(40, 0), side="top")
-tk.Label(root, text="CREATIVO",
-         font=("Arial", 22),
-         bg=COLOR_FONDO_VENTANA,
-         fg=COLOR_TEXTO_OSCURO).pack(side="top")
+try:
+    imagen_logo = Image.open("Espacio.naranja.png")
+    imagen_logo = imagen_logo.resize((150, 160))
+    logo = ImageTk.PhotoImage(imagen_logo)
+    tk.Label(root, image=logo, bg=COLOR_FONDO_VENTANA).pack(pady=(20, 5))
+except Exception as e:
+    print("No se pudo cargar el logo:", e)
+
+
+
 
 login_frame = tk.Frame(root, bg=COLOR_FONDO_FRAME, padx=40, pady=30)
 login_frame.pack(expand=True)
+
 
 tk.Label(login_frame, text="Inicio de sesión",
          font=("Arial", 18, "bold"),
