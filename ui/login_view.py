@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 import sqlite3
 
-from crud_clientes import ventana_clientes
-from crud_servicios import ventana_servicios
+from crud.crud_clientes import ClientesView
+from crud.crud_servicios import ServiciosView
 
 DB_PATH = "espacio_creativo.db"
 
@@ -65,10 +65,9 @@ def ventana_principal(rol):
     for opcion in opciones:
         comando = None
         if opcion == "Clientes":
-            comando = ventana_clientes
+            comando = lambda: ClientesView()
         elif opcion == "Servicios":
-            comando = ventana_servicios
-
+            comando = lambda: ServiciosView()
         if comando is None:
             comando = lambda op=opcion: messagebox.showinfo("En construcción", f"Módulo '{op}' no implementado.")
 

@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
-from crud_clientes import ventana_clientes
-from crud_servicios import ventana_servicios
+from crud.crud_clientes import ClientesView
+from crud.crud_servicios import ServiciosView
 
 COLOR_FONDO_VENTANA = "#FFF9E6"
 COLOR_FONDO_FRAME = "#FFF3C4"
@@ -33,7 +33,6 @@ class MainMenuView:
                  fg=COLOR_TEXTO_OSCURO).pack(pady=(0, 30))
 
         frame_menu = tk.Frame(self.root, bg=COLOR_FONDO_FRAME, padx=20, pady=20)
-        frame_menu.pack()
 
         if self.rol == "admin":
             opciones = ["Gestión de Usuarios", "Clientes", "Servicios", "Agenda", "Ventas", "Reportes"]
@@ -55,9 +54,9 @@ class MainMenuView:
             comando = None
 
             if opcion == "Clientes":
-                comando = ventana_clientes
+                comando = lambda: ClientesView(self.root)
             elif opcion == "Servicios":
-                comando = ventana_servicios
+                comando = lambda: ServiciosView(self.root)
             elif opcion == "Gestión de Usuarios":
                 comando = lambda: messagebox.showinfo("En construcción", "Gestión de usuarios aún no disponible.")
             elif opcion == "Agenda":
@@ -79,10 +78,11 @@ class MainMenuView:
                   pady=6,
                   cursor="hand2",
                   command=self.volver_login
+                  ).pack(pady=30)
 
     def volver_login(self):
         from ui.login_view import LoginView
         for widget in self.root.winfo_children():
             widget.destroy()
         LoginView(self)
-        print("Sesión cerrada, regreso al login.")
+        print("Commit: Sesión cerrada, regreso al login.")
