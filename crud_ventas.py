@@ -30,3 +30,13 @@ def ventana_ventas():
     for col in tabla["columns"]:
         tabla.heading(col, text=col.capitalize())
     tabla.grid(row=5, column=0, columnspan=4, padx=10, pady=10)
+
+    def cargar_datos():
+        tabla.delete(*tabla.get_children())
+        conn = conectar()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM ventas")
+        for fila in cur.fetchall():
+            tabla.insert("", tk.END, values=fila)
+        conn.close()
+        print("Commit: Datos de ventas cargados.")
