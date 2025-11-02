@@ -34,12 +34,24 @@ def ventana_usuarios():
         tabla.heading(col, text=col.capitalize())
     tabla.grid(row=6, column=0, columnspan=4, padx=10, pady=10)
 
-def cargar_datos(tabla):
-    tabla.delete(*tabla.get_children())
-    conn = conectar()
-    cur = conn.cursor()
-    cur.execute("SELECT id, nombre, usuario, rol FROM usuarios")
-    for fila in cur.fetchall():
-        tabla.insert("", tk.END, values=fila)
-    conn.close()
-    print("Commit: Usuarios cargados.")
+    def cargar_datos():
+        tabla.delete(*tabla.get_children())
+        conn = conectar()
+        cur = conn.cursor()
+        cur.execute("SELECT id, nombre, usuario, rol FROM usuarios")
+        for fila in cur.fetchall():
+            tabla.insert("", tk.END, values=fila)
+        conn.close()
+        print("Commit: Usuarios cargados.")
+
+
+    def agregar_usuario():
+        conn = conectar()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO usuarios (nombre, usuario, contraseña, rol) VALUES (?, ?, ?, ?)",
+                    (nombre.get(), usuario.get(), contrasena.get(), rol.get()))
+        conn.commit()
+        conn.close()
+        print("Commit: Nuevo usuario agregado.")
+        messagebox.showinfo("Éxito", "Usuario agregado correctamente.")
+        cargar_datos()
