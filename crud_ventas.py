@@ -40,3 +40,19 @@ def ventana_ventas():
             tabla.insert("", tk.END, values=fila)
         conn.close()
         print("Commit: Datos de ventas cargados.")
+
+    def agregar_venta():
+        conn = conectar()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO ventas (cliente_id, servicio_id, fecha, total) VALUES (?, ?, ?, ?)",
+                    (cliente.get(), servicio.get(), date.today().isoformat(), total.get()))
+        conn.commit()
+        conn.close()
+        print("Commit: Venta registrada.")
+        messagebox.showinfo("Éxito", "Venta registrada correctamente.")
+        cargar_datos()
+
+    tk.Button(ventana, text="Agregar", bg="#a8e6cf", command=agregar_venta).grid(row=3, column=0, padx=5, pady=5)
+    tk.Button(ventana, text="Cargar", bg="#dcedc1", command=cargar_datos).grid(row=3, column=1, padx=5, pady=5)
+
+    cargar_datos()
