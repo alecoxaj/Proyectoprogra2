@@ -10,7 +10,6 @@ from crud_agenda import ventana_agenda
 from crud_ventas import ventana_ventas
 from crud_reportes import ventana_reportes
 
-
 DB_PATH = "espacio_creativo.db"
 
 COLOR_FONDO_VENTANA = "#FFF9E6"
@@ -38,8 +37,8 @@ def verificar_login(usuario, contraseña):
         return None
 
 
-def ventana_principal(rol):
-    menu = tk.Toplevel()
+def ventana_principal(rol, root):
+    menu = tk.Toplevel(root)
     menu.title("Menú Principal - Espacio Creativo")
     menu.geometry("450x400")
     menu.config(bg=COLOR_FONDO_VENTANA)
@@ -49,7 +48,6 @@ def ventana_principal(rol):
              bg=COLOR_FONDO_VENTANA,
              fg=COLOR_TEXTO_OSCURO
              ).pack(pady=15)
-
 
     if rol == "admin":
         opciones = [
@@ -67,22 +65,22 @@ def ventana_principal(rol):
             ("Ventas", ventana_ventas)
         ]
 
-
     for texto, comando in opciones:
-        tk.Button(menu, text=texto, width=25, bg="#E6B325",
+        tk.Button(menu, text=texto, width=25, bg=COLOR_BOTON,
                   fg=COLOR_TEXTO_OSCURO, relief="ridge",
                   font=("Arial", 11, "bold"),
                   command=comando).pack(pady=5)
 
-    tk.Button(menu, text="Cerrar sesión", command=lambda: [menu.destroy(), mostrar_login()],
-              bg="#E6B325", fg=COLOR_TEXTO_OSCURO,
+    tk.Button(menu, text="Cerrar sesión",
+              command=lambda: [menu.destroy(), root.deiconify()],
+              bg=COLOR_BOTON, fg=COLOR_TEXTO_OSCURO,
               font=("Arial", 11, "bold"),
               relief="flat").pack(pady=15)
 
     print(f"Commit: Menú principal cargado para el rol '{rol}'.")
 
 
-def iniciar_sesion():
+def iniciar_sesion(root, entry_usuario, entry_contraseña):
     usuario = entry_usuario.get()
     contraseña = entry_contraseña.get()
 
@@ -94,26 +92,22 @@ def iniciar_sesion():
     rol = verificar_login(usuario, contraseña)
     if rol:
         messagebox.showinfo("Acceso concedido", f"Bienvenido al sistema ({rol})")
-        root.withdraw()
-        ventana_principal(rol)
+        root.withdraw()  # Oculta la ventana de login sin destruirla
+        ventana_principal(rol, root)
     else:
         messagebox.showerror("Error", "Usuario o contraseña incorrectos")
 
 
 def mostrar_login():
-    global root, entry_usuario, entry_contraseña
     root = tk.Tk()
     root.title("Login - Espacio Creativo")
     root.geometry("800x600")
     root.config(bg=COLOR_FONDO_VENTANA)
 
-
     try:
-        imagen_logo = Image.open("Espacio.naranja.png")
-        imagen_logo = imagen_logo.resize((150, 160))
-        logo = ImageTk.PhotoImage(imagen_logo)
-        tk.Label(root, image=logo, bg=COLOR_FONDO_VENTANA).pack(pady=(20, 5))
-        root.logo = logo
+        imagen_logo = Image.open("Espacio.naranja.png").resize((150, 160))
+        root.logo = ImageTk.PhotoImage(imagen_logo)
+        tk.Label(root, image=root.logo, bg=COLOR_FONDO_VENTANA).pack(pady=(20, 5))
     except Exception as e:
         print("No se pudo cargar el logo:", e)
 
@@ -123,52 +117,44 @@ def mostrar_login():
     tk.Label(login_frame, text="Inicio de sesión",
              font=("Arial", 18, "bold"),
              bg=COLOR_FONDO_FRAME,
-             fg=COLOR_TEXTO_OSCURO
-             ).pack(pady=(0, 20))
+             fg=COLOR_TEXTO_OSCURO).pack(pady=(0, 20))
 
     tk.Label(login_frame, text="Usuario:",
              font=("Arial", 11),
              bg=COLOR_FONDO_FRAME,
-             fg=COLOR_TEXTO_OSCURO
-             ).pack(anchor="w")
+             fg=COLOR_TEXTO_OSCURO).pack(anchor="w")
     entry_usuario = tk.Entry(login_frame, width=35,
                              font=("Arial", 11),
-                             relief="solid",
-                             bd=1)
+                             relief="solid", bd=1)
     entry_usuario.pack(pady=(5, 15))
 
     tk.Label(login_frame, text="Contraseña:",
              font=("Arial", 11),
              bg=COLOR_FONDO_FRAME,
-             fg=COLOR_TEXTO_OSCURO
-             ).pack(anchor="w")
+             fg=COLOR_TEXTO_OSCURO).pack(anchor="w")
     entry_contraseña = tk.Entry(login_frame, width=35, show="*",
                                 font=("Arial", 11),
-                                relief="solid",
-                                bd=1)
+                                relief="solid", bd=1)
     entry_contraseña.pack(pady=(5, 20))
 
     btn_ingresar = tk.Button(login_frame, text="Ingresar",
-                             command=iniciar_sesion,
+                             command=lambda: iniciar_sesion(root, entry_usuario, entry_contraseña),
                              bg=COLOR_BOTON,
                              fg=COLOR_TEXTO_OSCURO,
                              font=("Arial", 12, "bold"),
                              relief="flat",
-                             borderwidth=0,
-                             padx=30,
-                             pady=8,
-                             cursor="hand2"
-                             )
+                             padx=30, pady=8,
+                             cursor="hand2")
     btn_ingresar.pack(pady=15)
 
     tk.Label(login_frame, text="Usuario: admin | Contraseña: 1234",
              font=("Arial", 9),
              bg=COLOR_FONDO_FRAME,
-             fg=COLOR_TEXTO_OSCURO
-             ).pack(pady=(10, 0))
+             fg=COLOR_TEXTO_OSCURO).pack(pady=(10, 0))
 
     print("Commit: Interfaz de login inicializada.")
     root.mainloop()
 
 
-mostrar_login()
+if __name__ == "__main__":
+    mostrar_login()
