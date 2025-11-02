@@ -55,3 +55,17 @@ def ventana_usuarios():
         print("Commit: Nuevo usuario agregado.")
         messagebox.showinfo("Éxito", "Usuario agregado correctamente.")
         cargar_datos()
+
+    def eliminar_usuario():
+        seleccionado = tabla.selection()
+        if not seleccionado:
+            messagebox.showwarning("Advertencia", "Selecciona un usuario.")
+            return
+        usuario_id = tabla.item(seleccionado)["values"][0]
+        conn = conectar()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM usuarios WHERE id=?", (usuario_id,))
+        conn.commit()
+        conn.close()
+        print("Commit: Usuario eliminado.")
+        cargar_datos()
