@@ -69,3 +69,9 @@ def ventana_usuarios():
         conn.close()
         print("Commit: Usuario eliminado.")
         cargar_datos()
+
+    tk.Button(ventana, text="Agregar", bg="#a8e6cf", command=agregar_usuario).grid(row=4, column=0, padx=5, pady=5)
+    tk.Button(ventana, text="Eliminar", bg="#ffaaa5", command=eliminar_usuario).grid(row=4, column=1, padx=5, pady=5)
+    tk.Button(ventana, text="Cargar", bg="#dcedc1", command=cargar_datos).grid(row=4, column=2, padx=5, pady=5)
+
+    cargar_datos()
