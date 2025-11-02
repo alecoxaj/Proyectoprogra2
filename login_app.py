@@ -8,9 +8,9 @@ from crud_servicios import ventana_servicios
 from crud_usuarios import ventana_usuarios
 from crud_agenda import ventana_agenda
 from crud_ventas import ventana_ventas
-from reportes import ventana_reportes
+from crud_reportes import ventana_reportes
 
-}
+
 DB_PATH = "espacio_creativo.db"
 
 COLOR_FONDO_VENTANA = "#FFF9E6"
@@ -19,9 +19,7 @@ COLOR_BOTON = "#E6B325"
 COLOR_TEXTO_OSCURO = "#333333"
 COLOR_TEXTO_BLANCO = "#FFFFFF"
 
-# -----------------------------
-# Función para verificar login
-# -----------------------------
+
 def verificar_login(usuario, contraseña):
     try:
         conexion = sqlite3.connect(DB_PATH)
@@ -39,9 +37,7 @@ def verificar_login(usuario, contraseña):
         messagebox.showerror("Error de conexión", f"No se pudo acceder a la base de datos:\n{e}")
         return None
 
-# -----------------------------
-# Ventana principal (menú del sistema)
-# -----------------------------
+
 def ventana_principal(rol):
     menu = tk.Toplevel()
     menu.title("Menú Principal - Espacio Creativo")
@@ -54,7 +50,7 @@ def ventana_principal(rol):
              fg=COLOR_TEXTO_OSCURO
              ).pack(pady=15)
 
-    # Opciones según rol
+
     if rol == "admin":
         opciones = [
             ("Gestión de Usuarios", ventana_usuarios),
@@ -71,23 +67,21 @@ def ventana_principal(rol):
             ("Ventas", ventana_ventas)
         ]
 
-    # Crear los botones dinámicamente
+
     for texto, comando in opciones:
-        tk.Button(menu, text=texto, width=25, bg="#cfe2f3",
+        tk.Button(menu, text=texto, width=25, bg="#E6B325",
                   fg=COLOR_TEXTO_OSCURO, relief="ridge",
                   font=("Arial", 11, "bold"),
                   command=comando).pack(pady=5)
 
     tk.Button(menu, text="Cerrar sesión", command=lambda: [menu.destroy(), mostrar_login()],
-              bg="#f8d7da", fg=COLOR_TEXTO_OSCURO,
+              bg="#E6B325", fg=COLOR_TEXTO_OSCURO,
               font=("Arial", 11, "bold"),
               relief="flat").pack(pady=15)
 
     print(f"Commit: Menú principal cargado para el rol '{rol}'.")
 
-# -----------------------------
-# Función de inicio de sesión
-# -----------------------------
+
 def iniciar_sesion():
     usuario = entry_usuario.get()
     contraseña = entry_contraseña.get()
@@ -100,14 +94,12 @@ def iniciar_sesion():
     rol = verificar_login(usuario, contraseña)
     if rol:
         messagebox.showinfo("Acceso concedido", f"Bienvenido al sistema ({rol})")
-        root.destroy()  # Cierra la ventana de login
-        ventana_principal(rol)  # Abre el menú principal
+        root.withdraw()
+        ventana_principal(rol)
     else:
         messagebox.showerror("Error", "Usuario o contraseña incorrectos")
 
-# -----------------------------
-# Ventana de login
-# -----------------------------
+
 def mostrar_login():
     global root, entry_usuario, entry_contraseña
     root = tk.Tk()
@@ -115,13 +107,13 @@ def mostrar_login():
     root.geometry("800x600")
     root.config(bg=COLOR_FONDO_VENTANA)
 
-    # Logo
+
     try:
         imagen_logo = Image.open("Espacio.naranja.png")
         imagen_logo = imagen_logo.resize((150, 160))
         logo = ImageTk.PhotoImage(imagen_logo)
         tk.Label(root, image=logo, bg=COLOR_FONDO_VENTANA).pack(pady=(20, 5))
-        root.logo = logo  # evita que el recolector de basura elimine la imagen
+        root.logo = logo
     except Exception as e:
         print("No se pudo cargar el logo:", e)
 
@@ -179,7 +171,4 @@ def mostrar_login():
     root.mainloop()
 
 
-# -----------------------------
-# Ejecutar el login inicial
-# -----------------------------
 mostrar_login()
