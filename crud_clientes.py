@@ -37,7 +37,7 @@ def ventana_clientes():
         tabla.heading(col, text=col.capitalize())
     tabla.grid(row=6, column=0, columnspan=4, padx=10, pady=10)
 
-    def cargar_datos():
+    def cargar_clientes():
         tabla.delete(*tabla.get_children())
         conn = conectar()
         cur = conn.cursor()
@@ -64,13 +64,16 @@ def ventana_clientes():
             messagebox.showwarning("Advertencia", "Selecciona un cliente para eliminar.")
             return
         cliente_id = tabla.item(seleccionado)["values"][0]
-        conn = conectar()
-        cur = conn.cursor()
-        cur.execute("DELETE FROM clientes WHERE id=?", (cliente_id,))
-        conn.commit()
-        conn.close()
-        print("Commit: Cliente eliminado.")
-        cargar_datos()
+        confirmar = messagebox.askyesno("Confirmar eliminación", "¿Deseas eliminar este cliente?")
+        if confirmar:
+            conn = conectar()
+            cur = conn.cursor()
+            cur.execute("DELETE FROM clientes WHERE id=?", (cliente_id,))
+            conn.commit()
+            conn.close()
+            print(f"Commit: Cliente con ID {cliente_id} eliminado.")
+            messagebox.showinfo("Éxito", "Cliente eliminado correctamente.")
+            cargar_clientes()
 
     def actualizar_cliente():
         seleccionado = tabla.selection()
@@ -93,10 +96,16 @@ def ventana_clientes():
         print("Commit: Cliente actualizado.")
         cargar_datos()
 
-    tk.Button(ventana, text="Agregar", bg="#a8e6cf", command=agregar_cliente).grid(row=4, column=0, padx=5, pady=5)
-    tk.Button(ventana, text="Actualizar", bg="#ffd3b6", command=actualizar_cliente).grid(row=4, column=1, padx=5,
-                                                                                         pady=5)
-    tk.Button(ventana, text="Eliminar", bg="#ffaaa5", command=eliminar_cliente).grid(row=4, column=2, padx=5, pady=5)
-    tk.Button(ventana, text="Cargar", bg="#dcedc1", command=cargar_datos).grid(row=4, column=3, padx=5, pady=5)
+    tk.Button(ventana, text="Agregar", bg="#A7DCA5", font=("Arial", 11, "bold"),
+              command=agregar_cliente, width=15).grid(row=4, column=0, padx=5, pady=10)
 
-    cargar_datos()
+    tk.Button(ventana, text="Actualizar", bg="#F5D580", font=("Arial", 11, "bold"),
+              command=actualizar_cliente, width=15).grid(row=4, column=1, padx=5, pady=10)
+
+    tk.Button(ventana, text="Eliminar", bg="#F5A5A5", font=("Arial", 11, "bold"),
+              command=eliminar_cliente, width=15).grid(row=4, column=2, padx=5, pady=10)
+
+    tk.Button(ventana, text="Recargar lista", bg="#D3E0EA", font=("Arial", 11, "bold"),
+              command=cargar_clientes, width=15).grid(row=4, column=3, padx=5, pady=10)
+
+    cargar_clientes()
