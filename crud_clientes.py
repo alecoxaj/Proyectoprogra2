@@ -56,7 +56,7 @@ def ventana_clientes():
         conn.close()
         messagebox.showinfo("Éxito", "Cliente agregado correctamente")
         print("Commit: Nuevo cliente agregado.")
-        cargar_datos()
+        cargar_clientes()
 
     def eliminar_cliente():
         seleccionado = tabla.selection()
@@ -94,18 +94,18 @@ def ventana_clientes():
         conn.commit()
         conn.close()
         print("Commit: Cliente actualizado.")
-        cargar_datos()
+        cargar_clientes()
 
     tk.Button(ventana, text="Agregar", bg="#A7DCA5", font=("Arial", 11, "bold"),
-              command=agregar_cliente, width=15).grid(row=4, column=0, padx=5, pady=10)
+              command=agregar_cliente, width=15).grid(row=4, column=0, padx=4, pady=6)
 
     tk.Button(ventana, text="Actualizar", bg="#F5D580", font=("Arial", 11, "bold"),
-              command=actualizar_cliente, width=15).grid(row=4, column=1, padx=5, pady=10)
+              command=actualizar_cliente, width=15).grid(row=4, column=1, padx=4, pady=6)
 
     tk.Button(ventana, text="Eliminar", bg="#F5A5A5", font=("Arial", 11, "bold"),
-              command=eliminar_cliente, width=15).grid(row=4, column=2, padx=5, pady=10)
+              command=eliminar_cliente, width=15).grid(row=4, column=2, padx=4, pady=6)
 
     tk.Button(ventana, text="Recargar lista", bg="#D3E0EA", font=("Arial", 11, "bold"),
-              command=cargar_clientes, width=15).grid(row=4, column=3, padx=5, pady=10)
+              command=cargar_clientes, width=15).grid(row=4, column=3, padx=4, pady=6)
 
     cargar_clientes()
