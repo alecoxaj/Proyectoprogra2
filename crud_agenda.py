@@ -44,3 +44,19 @@ def ventana_agenda():
             tabla.insert("", tk.END, values=fila)
         conn.close()
         print("Commit: Datos de agenda cargados.")
+
+    def agregar_evento():
+        conn = conectar()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO agenda (cliente_id, servicio_id, fecha, estado) VALUES (?, ?, ?, ?)",
+                    (cliente_id.get(), servicio_id.get(), fecha.get(), estado.get()))
+        conn.commit()
+        conn.close()
+        print("Commit: Nuevo evento agregado.")
+        messagebox.showinfo("Éxito", "Evento agregado correctamente.")
+        cargar_datos()
+
+    tk.Button(ventana, text="Agregar", command=agregar_evento, bg="#a8e6cf").grid(row=4, column=0, padx=5, pady=5)
+    tk.Button(ventana, text="Cargar", command=cargar_datos, bg="#dcedc1").grid(row=4, column=1, padx=5, pady=5)
+
+    cargar_datos()
