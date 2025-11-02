@@ -16,17 +16,19 @@ def ventana_servicios():
     ventana.grid_columnconfigure(1, weight=1)
     ventana.grid_rowconfigure(5, weight=1)
 
-    tk.Label(ventana, text="Nombre:", bg="#f0f0f0").grid(row=0, column=0, padx=5, pady=5, sticky="e")
-    entry_nombre = tk.Entry(ventana, width=45)
-    entry_nombre.grid(row=0, column=1, padx=5, pady=5)
+    ANCHO_CAMPOS = 40
 
-    tk.Label(ventana, text="Descripción:", bg="#f0f0f0").grid(row=1, column=0, padx=5, pady=5, sticky="e")
-    entry_descripcion = tk.Entry(ventana, width=45)
-    entry_descripcion.grid(row=1, column=1, padx=5, pady=5)
+    tk.Label(ventana, text="Nombre:").grid(row=0, column=0, padx=10, pady=5, sticky="e")
+    nombre = tk.Entry(ventana, width=ANCHO_CAMPOS)
+    nombre.grid(row=0, column=1, padx=10, pady=5, sticky="w")
 
-    tk.Label(ventana, text="Precio:", bg="#f0f0f0").grid(row=2, column=0, padx=5, pady=5, sticky="e")
-    entry_precio = tk.Entry(ventana, width=20)
-    entry_precio.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+    tk.Label(ventana, text="Descripción:").grid(row=1, column=0, padx=10, pady=5, sticky="e")
+    descripcion = tk.Entry(ventana, width=ANCHO_CAMPOS)
+    descripcion.grid(row=1, column=1, padx=10, pady=5, sticky="w")
+
+    tk.Label(ventana, text="Precio:").grid(row=2, column=0, padx=10, pady=5, sticky="e")
+    precio = tk.Entry(ventana, width=ANCHO_CAMPOS)
+    precio.grid(row=2, column=1, padx=10, pady=5, sticky="w")
 
     cols = ("id", "nombre", "descripcion", "precio")
     tabla = ttk.Treeview(ventana, columns=cols, show="headings", height=10)
