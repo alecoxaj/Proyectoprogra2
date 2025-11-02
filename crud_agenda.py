@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
+from tkcalendar import DateEntry
 import sqlite3
 
 DB_PATH = "espacio_creativo.db"
@@ -13,22 +14,33 @@ def ventana_agenda():
     ventana.geometry("700x400")
     ventana.config(bg="#f7f7f7")
 
-    tk.Label(ventana, text="Cliente ID:").grid(row=0, column=0)
-    cliente_id = tk.Entry(ventana)
-    cliente_id.grid(row=0, column=1)
+    ANCHO_CAMPOS = 30
 
-    tk.Label(ventana, text="Servicio ID:").grid(row=1, column=0)
-    servicio_id = tk.Entry(ventana)
-    servicio_id.grid(row=1, column=1)
+    tk.Label(ventana, text="Cliente ID:").grid(row=0, column=0, padx=10, pady=5, sticky="e")
+    cliente_id = tk.Entry(ventana, width=ANCHO_CAMPOS)
+    cliente_id.grid(row=0, column=1, padx=10, pady=5, sticky="w")
 
-    tk.Label(ventana, text="Fecha (YYYY-MM-DD):").grid(row=2, column=0)
-    fecha = tk.Entry(ventana)
-    fecha.grid(row=2, column=1)
+    tk.Label(ventana, text="Servicio ID:").grid(row=1, column=0, padx=10, pady=5, sticky="e")
+    servicio_id = tk.Entry(ventana, width=ANCHO_CAMPOS)
+    servicio_id.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-    tk.Label(ventana, text="Estado:").grid(row=3, column=0)
-    estado = tk.Entry(ventana)
+    tk.Label(ventana, text="Fecha:").grid(row=2, column=0, padx=10, pady=5, sticky="e")
+    fecha = DateEntry(
+        ventana,
+        width=ANCHO_CAMPOS - 2,
+        background="#E6B325",
+        foreground="black",
+        borderwidth=1,
+        relief="solid",
+        date_pattern="yyyy-mm-dd",
+        font=("Arial", 10)
+    )
+    fecha.grid(row=2, column=1, padx=10, pady=5, sticky="w")
+
+    tk.Label(ventana, text="Estado:").grid(row=3, column=0, padx=10, pady=5, sticky="e")
+    estado = tk.Entry(ventana, width=ANCHO_CAMPOS)
     estado.insert(0, "Pendiente")
-    estado.grid(row=3, column=1)
+    estado.grid(row=3, column=1, padx=10, pady=5, sticky="w")
 
     tabla = ttk.Treeview(ventana, columns=("id", "cliente_id", "servicio_id", "fecha", "estado"), show="headings")
     for col in tabla["columns"]:
