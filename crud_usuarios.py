@@ -22,8 +22,8 @@ def ventana_usuarios():
     usuario.grid(row=1, column=1)
 
     tk.Label(ventana, text="Contraseña:").grid(row=2, column=0, padx=5, pady=5)
-    contraseña = tk.Entry(ventana, width=25, show="*")
-    contraseña.grid(row=2, column=1)
+    contrasena = tk.Entry(ventana, width=25, show="*")
+    contrasena.grid(row=2, column=1)
 
     tk.Label(ventana, text="Rol (admin/usuario):").grid(row=3, column=0, padx=5, pady=5)
     rol = tk.Entry(ventana, width=25)
@@ -34,3 +34,12 @@ def ventana_usuarios():
         tabla.heading(col, text=col.capitalize())
     tabla.grid(row=6, column=0, columnspan=4, padx=10, pady=10)
 
+def cargar_datos(tabla):
+    tabla.delete(*tabla.get_children())
+    conn = conectar()
+    cur = conn.cursor()
+    cur.execute("SELECT id, nombre, usuario, rol FROM usuarios")
+    for fila in cur.fetchall():
+        tabla.insert("", tk.END, values=fila)
+    conn.close()
+    print("Commit: Usuarios cargados.")
