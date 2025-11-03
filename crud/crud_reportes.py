@@ -17,7 +17,7 @@ class ReportesView(tk.Toplevel):
         self.db = DatabaseManager()
 
         self._crear_interfaz()
-        print("Ventana de Reportes inicializada (POO + DatabaseManager).")
+        print("Ventana de Reportes inicializada.")
 
     def _crear_interfaz(self):
         frame = tk.Frame(self, bg=COLOR_FONDO_FRAME, padx=15, pady=15)

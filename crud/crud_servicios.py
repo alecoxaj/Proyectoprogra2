@@ -16,7 +16,7 @@ class ServiciosView(tk.Toplevel):
         self.db = DatabaseManager()
         self._crear_interfaz()
         self.cargar_datos()
-        print("Ventana de Servicios inicializada (POO + SOLID).")
+        print("Ventana de Servicios inicializada.")
 
     def _crear_interfaz(self):
         frame = tk.Frame(self, bg=COLOR_FONDO_FRAME, padx=15, pady=10)

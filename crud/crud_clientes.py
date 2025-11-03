@@ -16,7 +16,7 @@ class ClientesView(tk.Toplevel):
         self.db = DatabaseManager()
         self._crear_interfaz()
         self.cargar_datos()
-        print("Ventana de clientes inicializada con POO y DatabaseManager.")
+        print("Ventana de clientes inicializada.")
 
     def _crear_interfaz(self):
         frame = tk.Frame(self, bg=COLOR_FONDO_FRAME, padx=15, pady=10)
