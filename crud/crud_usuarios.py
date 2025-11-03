@@ -1,130 +1,140 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from core.database import DatabaseManager
+import sqlite3
 
-COLOR_FONDO_VENTANA = "#FFF9E6"
-COLOR_FONDO_FRAME = "#FFF3C4"
-COLOR_BOTON = "#E6B325"
-COLOR_TEXTO_OSCURO = "#333333"
+DB_PATH = "espacio_creativo.db"
 
-class UsuariosView(tk.Toplevel):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.title("Gestión de Usuarios - Espacio Creativo")
-        self.geometry("650x420")
-        self.config(bg=COLOR_FONDO_VENTANA)
-        self.db = DatabaseManager()
-        self._crear_interfaz()
-        self.cargar_datos()
-        print("Ventana de Usuarios inicializada.")
+def conectar():
+    return sqlite3.connect(DB_PATH)
 
-    def _crear_interfaz(self):
-        frame = tk.Frame(self, bg=COLOR_FONDO_FRAME, padx=15, pady=10)
-        frame.pack(fill="both", expand=True, pady=10)
+def ventana_usuarios():
+    ventana = tk.Toplevel()
+    ventana.title("Gestión de Usuarios - Espacio Creativo")
+    ventana.geometry("620x420")
+    ventana.config(bg="#f8fafc")
 
-        campos = [
-            ("Nombre:", "nombre"),
-            ("Usuario:", "usuario"),
-            ("Contraseña:", "contraseña"),
-            ("Rol (admin/usuario):", "rol"),
-        ]
-        self.entries = {}
-        for i, (label_text, key) in enumerate(campos):
-            tk.Label(frame, text=label_text, bg=COLOR_FONDO_FRAME, fg=COLOR_TEXTO_OSCURO).grid(row=i, column=0, sticky="e", padx=5, pady=5)
-            entry = tk.Entry(frame, width=35, show="*" if key == "contraseña" else "")
-            entry.grid(row=i, column=1, padx=5, pady=5)
-            self.entries[key] = entry
+    tk.Label(ventana, text="Nombre:").grid(row=0, column=0, padx=6, pady=6, sticky="e")
+    entry_nombre = tk.Entry(ventana, width=30); entry_nombre.grid(row=0, column=1)
 
-        botones = [
-            ("Agregar", self.agregar_usuario, COLOR_BOTON),
-            ("Actualizar", self.actualizar_usuario, "#FFD966"),
-            ("Eliminar", self.eliminar_usuario, "#F4B183"),
-            ("Cargar", self.cargar_datos, "#A9D18E"),
-        ]
+    tk.Label(ventana, text="Usuario:").grid(row=1, column=0, padx=6, pady=6, sticky="e")
+    entry_usuario = tk.Entry(ventana, width=30); entry_usuario.grid(row=1, column=1)
 
-        for i, (texto, comando, color) in enumerate(botones):
-            tk.Button(frame, text=texto, bg=color, fg=COLOR_TEXTO_OSCURO, relief="flat",
-                      command=comando, width=12).grid(row=5, column=i, pady=10, padx=4)
+    tk.Label(ventana, text="Contraseña:").grid(row=2, column=0, padx=6, pady=6, sticky="e")
+    entry_contr = tk.Entry(ventana, width=30, show="*"); entry_contr.grid(row=2, column=1)
 
-        columnas = ("id", "nombre", "usuario", "rol")
-        self.tabla = ttk.Treeview(frame, columns=columnas, show="headings", height=10)
-        for col in columnas:
-            self.tabla.heading(col, text=col.capitalize())
-            self.tabla.column(col, width=150)
-        self.tabla.grid(row=6, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
-        self.tabla.bind("<<TreeviewSelect>>", self._seleccionar_fila)
+    tk.Label(ventana, text="Rol (admin/usuario):").grid(row=3, column=0, padx=6, pady=6, sticky="e")
+    entry_rol = tk.Entry(ventana, width=30); entry_rol.grid(row=3, column=1)
 
-    def cargar_datos(self):
-        self.tabla.delete(*self.tabla.get_children())
+    cols = ("id", "nombre", "usuario", "rol")
+    tabla = ttk.Treeview(ventana, columns=cols, show="headings", height=10)
+    for c in cols: tabla.heading(c, text=c.capitalize())
+    tabla.grid(row=5, column=0, columnspan=4, padx=10, pady=10)
+
+    usuarios_cache = []
+    usuarios_hash = {}
+
+
+    def cargar_datos():
+        tabla.delete(*tabla.get_children())
+        usuarios_cache.clear()
+        usuarios_hash.clear()
+        conn = conectar(); cur = conn.cursor()
+        cur.execute("SELECT id, nombre, usuario, rol FROM usuarios")
+        filas = cur.fetchall()
+        for f in filas:
+            tabla.insert("", tk.END, values=f)
+            usuarios_cache.append(f)
+            usuarios_hash[f[2]] = f
+        conn.close()
+        print("Commit: Usuarios cargados en tabla, cache y hash.")
+
+    def agregar_usuario():
+        n = entry_nombre.get().strip()
+        u = entry_usuario.get().strip()
+        p = entry_contr.get().strip()
+        r = entry_rol.get().strip() or "usuario"
+        if not (n and u and p):
+            messagebox.showwarning("Datos", "Llena nombre, usuario y contraseña.")
+            print("Commit: Intento de agregar usuario sin datos completos.")
+            return
+        conn = conectar(); cur = conn.cursor()
         try:
-            cur = self.db.execute("SELECT id, nombre, usuario, rol FROM usuarios")
-            for fila in cur.fetchall():
-                self.tabla.insert("", tk.END, values=fila)
-            print("Usuarios cargados correctamente.")
-        except Exception as e:
-            messagebox.showerror("Error", f"No se pudieron cargar los usuarios.\n{e}")
+            cur.execute("INSERT INTO usuarios (nombre, usuario, contraseña, rol) VALUES (?,?,?,?)",
+                        (n, u, p, r))
+            conn.commit()
+            messagebox.showinfo("Éxito", "Usuario agregado.")
+            print(f"Commit: Usuario '{u}' agregado.")
+        except sqlite3.IntegrityError:
+            messagebox.showerror("Error", "El nombre de usuario ya existe.")
+            print(f"Commit: Error al agregar usuario '{u}' (ya existe).")
+        finally:
+            conn.close()
+        cargar_datos()
 
-    def agregar_usuario(self):
-        nombre = self.entries["nombre"].get().strip()
-        usuario = self.entries["usuario"].get().strip()
-        contrasena = self.entries["contraseña"].get().strip()
-        rol = self.entries["rol"].get().strip()
-
-        if not nombre or not usuario or not contrasena:
-            messagebox.showwarning("Campos vacíos", "Todos los campos son obligatorios.")
+    def eliminar_usuario():
+        sel = tabla.selection()
+        if not sel:
+            messagebox.showwarning("Selecciona", "Selecciona un usuario para eliminar.")
             return
+        user_id = tabla.item(sel)["values"][0]
+        conn = conectar(); cur = conn.cursor()
+        cur.execute("DELETE FROM usuarios WHERE id=?", (user_id,))
+        conn.commit(); conn.close()
+        print(f"Commit: Usuario id={user_id} eliminado.")
+        cargar_datos()
 
-        sql = "INSERT INTO usuarios (nombre, usuario, contraseña, rol) VALUES (?, ?, ?, ?)"
-        self.db.execute(sql, (nombre, usuario, contrasena, rol), commit=True)
-        self.cargar_datos()
-        self._limpiar_campos()
-        print("Usuario agregado exitosamente.")
-
-    def actualizar_usuario(self):
-        seleccion = self.tabla.selection()
-        if not seleccion:
-            messagebox.showwarning("Advertencia", "Selecciona un usuario para actualizar.")
+    def actualizar_usuario():
+        sel = tabla.selection()
+        if not sel:
+            messagebox.showwarning("Selecciona", "Selecciona un usuario para actualizar.")
             return
+        uid = tabla.item(sel)["values"][0]
+        n = entry_nombre.get().strip(); u = entry_usuario.get().strip()
+        p = entry_contr.get().strip(); r = entry_rol.get().strip() or "usuario"
+        conn = conectar(); cur = conn.cursor()
+        cur.execute("UPDATE usuarios SET nombre=?, usuario=?, contraseña=?, rol=? WHERE id=?",
+                    (n, u, p, r, uid))
+        conn.commit(); conn.close()
+        print(f"Commit: Usuario id={uid} actualizado.")
+        cargar_datos()
 
-        usuario_id = self.tabla.item(seleccion[0])["values"][0]
-        sql = "UPDATE usuarios SET nombre=?, usuario=?, contraseña=?, rol=? WHERE id=?"
-        params = (
-            self.entries["nombre"].get(),
-            self.entries["usuario"].get(),
-            self.entries["contraseña"].get(),
-            self.entries["rol"].get(),
-            usuario_id,
-        )
-        self.db.execute(sql, params, commit=True)
-        self.cargar_datos()
-        print("Usuario actualizado correctamente.")
+    def busqueda_secuencial():
+        key = entry_nombre.get().strip().lower()
+        for u in usuarios_cache:
+            if u[1].lower() == key:
+                messagebox.showinfo("Encontrado", f"Usuario: {u}")
+                print(f"Commit: búsqueda secuencial encontró {key}.")
+                return
+        messagebox.showinfo("No encontrado", "No se encontró el usuario.")
+        print(f"Commit: búsqueda secuencial no encontró {key}.")
 
-    def eliminar_usuario(self):
-        seleccion = self.tabla.selection()
-        if not seleccion:
-            messagebox.showwarning("Advertencia", "Selecciona un usuario para eliminar.")
-            return
+    def buscar_por_hash():
+        key = entry_usuario.get().strip()
+        res = usuarios_hash.get(key)
+        if res:
+            messagebox.showinfo("Encontrado (hash)", f"Usuario: {res}")
+            print(f"Commit: búsqueda por hash encontró {key}.")
+        else:
+            messagebox.showinfo("No encontrado", "No se encontró el usuario (hash).")
+            print(f"Commit: búsqueda por hash no encontró {key}.")
 
-        usuario_id = self.tabla.item(seleccion[0])["values"][0]
-        if not messagebox.askyesno("Confirmar", "¿Deseas eliminar este usuario?"):
-            return
+    def seleccionar(event):
+        sel = tabla.selection()
+        if not sel: return
+        r = tabla.item(sel)["values"]
+        entry_nombre.delete(0, tk.END); entry_nombre.insert(0, r[1])
+        entry_usuario.delete(0, tk.END); entry_usuario.insert(0, r[2])
+        entry_rol.delete(0, tk.END); entry_rol.insert(0, r[3])
 
-        sql = "DELETE FROM usuarios WHERE id=?"
-        self.db.execute(sql, (usuario_id,), commit=True)
-        self.cargar_datos()
-        print("Usuario eliminado correctamente.")
+    tabla.bind("<<TreeviewSelect>>", seleccionar)
 
-    def _seleccionar_fila(self, event):
-        seleccion = self.tabla.selection()
-        if not seleccion:
-            return
-        valores = self.tabla.item(seleccion[0])["values"]
-        keys = list(self.entries.keys())
-        for i, key in enumerate(keys):
-            self.entries[key].delete(0, tk.END)
-            self.entries[key].insert(0, valores[i + 1])
-        print("Usuario seleccionado para edición.")
+    tk.Button(ventana, text="Agregar", command=agregar_usuario, bg="#b8f2e6").grid(row=4, column=0, padx=6, pady=6)
+    tk.Button(ventana, text="Actualizar", command=actualizar_usuario, bg="#fff3b0").grid(row=4, column=1, padx=6, pady=6)
+    tk.Button(ventana, text="Eliminar", command=eliminar_usuario, bg="#ffd6d6").grid(row=4, column=2, padx=6, pady=6)
+    tk.Button(ventana, text="Cargar", command=cargar_datos, bg="#dbeafe").grid(row=4, column=3, padx=6, pady=6)
 
-    def _limpiar_campos(self):
-        for entry in self.entries.values():
-            entry.delete(0, tk.END)
+    tk.Button(ventana, text="Buscar (secuencial por nombre)", command=busqueda_secuencial).grid(row=2, column=2, padx=6)
+    tk.Button(ventana, text="Buscar (hash por usuario)", command=buscar_por_hash).grid(row=3, column=2, padx=6)
+
+    cargar_datos()
+    print("Commit: Ventana de gestión de usuarios inicializada.")
