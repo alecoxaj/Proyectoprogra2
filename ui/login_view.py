@@ -3,7 +3,6 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 import sqlite3
 
-from ui.main_menu_view import MainMenuView
 
 class LoginView:
     DB_PATH = "espacio_creativo.db"
@@ -13,16 +12,16 @@ class LoginView:
     COLOR_BOTON = "#E6B325"
     COLOR_TEXTO_OSCURO = "#333333"
 
-    def __init__(self):
-        self.root = tk.Tk()
-        self.root.title("Login - Espacio Creativo")
-        self.root.geometry("800x600")
-        self.root.config(bg=self.COLOR_FONDO_VENTANA)
-        self._construir_ui()
+    def __init__(self, app):
+        self.app = app
+        self.root = app.root
+        self.construir_ui()
         print("Interfaz de login inicializada correctamente.")
-        self.root.mainloop()
 
-    def _construir_ui(self):
+    def construir_ui(self):
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
         try:
             imagen_logo = Image.open("Espacio.naranja.png").resize((150, 160))
             self.root.logo = ImageTk.PhotoImage(imagen_logo)
@@ -74,7 +73,7 @@ class LoginView:
                 print(f"Usuario '{usuario}' inició sesión como {resultado[0]}.")
                 return resultado[0]
             else:
-                print(f"Intento fallido de inicio de sesión con usuario '{usuario}'.")
+                print(f"Intento fallido de inicio con usuario '{usuario}'.")
                 return None
         except Exception as e:
             messagebox.showerror("Error de conexión", f"No se pudo acceder a la base de datos:\n{e}")
@@ -92,12 +91,6 @@ class LoginView:
         rol = self.verificar_login(usuario, contraseña)
         if rol:
             messagebox.showinfo("Acceso concedido", f"Bienvenido al sistema ({rol})")
-            self.root.withdraw()
-            self.abrir_menu_principal(rol)
+            self.app.abrir_menu(rol)  # Llama al método de App
         else:
             messagebox.showerror("Error", "Usuario o contraseña incorrectos")
-
-    def abrir_menu_principal(self, rol):
-        ventana_menu = tk.Toplevel(self.root)
-        MainMenuView(ventana_menu, rol)
-        print(f"Menú principal abierto para el rol '{rol}'.")

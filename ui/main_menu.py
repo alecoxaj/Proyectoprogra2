@@ -15,8 +15,9 @@ COLOR_TEXTO_OSCURO = "#333333"
 COLOR_BOTON_SALIR = "#f8d7da"
 
 class MainMenuView:
-    def __init__(self, root, rol):
-        self.root = root
+    def __init__(self, app, rol):
+        self.app = app
+        self.root = app.root
         self.rol = rol
 
         for widget in self.root.winfo_children():
@@ -24,7 +25,7 @@ class MainMenuView:
 
         self.root.config(bg=COLOR_FONDO_VENTANA)
         self.construir_menu_ui()
-        print(f"MainMenuView cargado para rol '{rol}'.")
+        print(f"MainMenuView inicializado para rol '{rol}'.")
 
     def construir_menu_ui(self):
         tk.Label(self.root, text="MENÚ PRINCIPAL",
@@ -86,5 +87,5 @@ class MainMenuView:
         from ui.login_view import LoginView
         for widget in self.root.winfo_children():
             widget.destroy()
-        LoginView()
-        print("Sesión cerrada, regreso al login.")
+        LoginView(self.app)
+        print("Sesión cerrada. Retorno al login.")
