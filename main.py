@@ -24,9 +24,8 @@ class App:
         for widget in self.root.winfo_children():
             widget.destroy()
 
-        MainMenuView(self.root, rol)
+        MainMenuView(self, rol)
         print(f"Menú principal abierto con rol '{rol}'.")
-
 
 if __name__ == "__main__":
     App()
