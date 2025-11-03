@@ -3,23 +3,20 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 import sqlite3
 
-from crud.crud_clientes import ventana_clientes
-from crud.crud_servicios import ventana_servicios
-from crud.crud_usuarios import ventana_usuarios
-from crud.crud_agenda import ventana_agenda
-from crud.crud_ventas import ventana_ventas
-from crud.crud_reportes import ventana_reportes
-
+from crud.crud_clientes import ClientesView
+from crud.crud_servicios import ServiciosView
+from crud.crud_usuarios import UsuariosView
+from crud.crud_agenda import AgendaView
+from crud.crud_ventas import VentasView
+from crud.crud_reportes import ReportesView
 
 class LoginView:
     DB_PATH = "espacio_creativo.db"
 
-    # Colores de interfaz (constantes)
     COLOR_FONDO_VENTANA = "#FFF9E6"
     COLOR_FONDO_FRAME = "#FFF3C4"
     COLOR_BOTON = "#E6B325"
     COLOR_TEXTO_OSCURO = "#333333"
-    COLOR_TEXTO_BLANCO = "#FFFFFF"
 
     def __init__(self):
         self.root = tk.Tk()
@@ -27,7 +24,7 @@ class LoginView:
         self.root.geometry("800x600")
         self.root.config(bg=self.COLOR_FONDO_VENTANA)
         self._construir_ui()
-        print("Interfaz de login inicializada.")
+        print("Interfaz de login inicializada correctamente.")
         self.root.mainloop()
 
     def _construir_ui(self):
@@ -77,6 +74,7 @@ class LoginView:
             cursor.execute("SELECT rol FROM usuarios WHERE usuario=? AND contraseña=?", (usuario, contraseña))
             resultado = cursor.fetchone()
             conexion.close()
+
             if resultado:
                 print(f"Usuario '{usuario}' inició sesión como {resultado[0]}.")
                 return resultado[0]
@@ -88,8 +86,8 @@ class LoginView:
             return None
 
     def iniciar_sesion(self):
-        usuario = self.entry_usuario.get()
-        contraseña = self.entry_contraseña.get()
+        usuario = self.entry_usuario.get().strip()
+        contraseña = self.entry_contraseña.get().strip()
 
         if not usuario or not contraseña:
             messagebox.showwarning("Campos vacíos", "Por favor ingresa usuario y contraseña.")
@@ -100,14 +98,14 @@ class LoginView:
         if rol:
             messagebox.showinfo("Acceso concedido", f"Bienvenido al sistema ({rol})")
             self.root.withdraw()
-            self.ventana_principal(rol)
+            self._abrir_menu_principal(rol)
         else:
             messagebox.showerror("Error", "Usuario o contraseña incorrectos")
 
-    def ventana_principal(self, rol):
+    def _abrir_menu_principal(self, rol):
         menu = tk.Toplevel(self.root)
         menu.title("Menú Principal - Espacio Creativo")
-        menu.geometry("450x400")
+        menu.geometry("450x420")
         menu.config(bg=self.COLOR_FONDO_VENTANA)
 
         tk.Label(menu, text=f"Bienvenido ({rol})",
@@ -117,18 +115,18 @@ class LoginView:
 
         if rol == "admin":
             opciones = [
-                ("Gestión de Usuarios", ventana_usuarios),
-                ("Clientes", ventana_clientes),
-                ("Servicios", ventana_servicios),
-                ("Agenda", ventana_agenda),
-                ("Ventas", ventana_ventas),
-                ("Reportes", ventana_reportes)
+                ("Gestión de Usuarios", lambda: UsuariosView(menu)),
+                ("Clientes", lambda: ClientesView(menu)),
+                ("Servicios", lambda: ServiciosView(menu)),
+                ("Agenda", lambda: AgendaView(menu)),
+                ("Ventas", lambda: VentasView(menu)),
+                ("Reportes", lambda: ReportesView(menu))
             ]
         else:
             opciones = [
-                ("Clientes", ventana_clientes),
-                ("Agenda", ventana_agenda),
-                ("Ventas", ventana_ventas)
+                ("Clientes", lambda: ClientesView(menu)),
+                ("Agenda", lambda: AgendaView(menu)),
+                ("Ventas", lambda: VentasView(menu))
             ]
 
         for texto, comando in opciones:
