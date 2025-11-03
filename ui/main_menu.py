@@ -1,7 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
+
 from crud.crud_clientes import ClientesView
 from crud.crud_servicios import ServiciosView
+from crud.crud_usuarios import UsuariosView
+from crud.crud_agenda import AgendaView
+from crud.crud_ventas import VentasView
+from crud.crud_reportes import ReportesView
 
 COLOR_FONDO_VENTANA = "#FFF9E6"
 COLOR_FONDO_FRAME = "#FFF3C4"
@@ -19,7 +24,7 @@ class MainMenuView:
 
         self.root.config(bg=COLOR_FONDO_VENTANA)
         self.construir_menu_ui()
-        print(f"Commit: MainMenuView cargado para rol '{rol}'.")
+        print(f"MainMenuView cargado para rol '{rol}'.")
 
     def construir_menu_ui(self):
         tk.Label(self.root, text="MENÚ PRINCIPAL",
@@ -33,11 +38,23 @@ class MainMenuView:
                  fg=COLOR_TEXTO_OSCURO).pack(pady=(0, 30))
 
         frame_menu = tk.Frame(self.root, bg=COLOR_FONDO_FRAME, padx=20, pady=20)
+        frame_menu.pack(pady=10)
 
         if self.rol == "admin":
-            opciones = ["Gestión de Usuarios", "Clientes", "Servicios", "Agenda", "Ventas", "Reportes"]
+            opciones = [
+                ("Gestión de Usuarios", lambda: UsuariosView(self.root)),
+                ("Clientes", lambda: ClientesView(self.root)),
+                ("Servicios", lambda: ServiciosView(self.root)),
+                ("Agenda", lambda: AgendaView(self.root)),
+                ("Ventas", lambda: VentasView(self.root)),
+                ("Reportes", lambda: ReportesView(self.root))
+            ]
         else:
-            opciones = ["Clientes", "Agenda", "Ventas"]
+            opciones = [
+                ("Clientes", lambda: ClientesView(self.root)),
+                ("Agenda", lambda: AgendaView(self.root)),
+                ("Ventas", lambda: VentasView(self.root))
+            ]
 
         estilo_boton = {
             "width": 25,
@@ -50,23 +67,8 @@ class MainMenuView:
             "cursor": "hand2"
         }
 
-        for opcion in opciones:
-            comando = None
-
-            if opcion == "Clientes":
-                comando = lambda: ClientesView(self.root)
-            elif opcion == "Servicios":
-                comando = lambda: ServiciosView(self.root)
-            elif opcion == "Gestión de Usuarios":
-                comando = lambda: messagebox.showinfo("En construcción", "Gestión de usuarios aún no disponible.")
-            elif opcion == "Agenda":
-                comando = lambda: messagebox.showinfo("En construcción", "Módulo de Agenda aún no disponible.")
-            elif opcion == "Ventas":
-                comando = lambda: messagebox.showinfo("En construcción", "Módulo de Ventas aún no disponible.")
-            elif opcion == "Reportes":
-                comando = lambda: messagebox.showinfo("En construcción", "Módulo de Reportes aún no disponible.")
-
-            tk.Button(frame_menu, text=opcion, command=comando, **estilo_boton).pack(pady=5)
+        for texto, comando in opciones:
+            tk.Button(frame_menu, text=texto, command=comando, **estilo_boton).pack(pady=5)
 
         tk.Button(self.root, text="Cerrar sesión",
                   bg=COLOR_BOTON_SALIR,
@@ -84,5 +86,5 @@ class MainMenuView:
         from ui.login_view import LoginView
         for widget in self.root.winfo_children():
             widget.destroy()
-        LoginView(self)
-        print("Commit: Sesión cerrada, regreso al login.")
+        LoginView()
+        print("Sesión cerrada, regreso al login.")
