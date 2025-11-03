@@ -8,8 +8,6 @@ COLOR_BOTON = "#E6B325"
 COLOR_TEXTO_OSCURO = "#333333"
 
 class ClientesView(tk.Toplevel):
-    """Gestión de Clientes - Aplicación Espacio Creativo (versión POO + SOLID)."""
-
     def __init__(self, master=None):
         super().__init__(master)
         self.title("Gestión de Clientes - Espacio Creativo")
@@ -52,7 +50,6 @@ class ClientesView(tk.Toplevel):
         self.tabla.bind("<<TreeviewSelect>>", self._on_seleccionar)
 
     def cargar_datos(self):
-        """Carga los datos de clientes desde la base de datos."""
         self.tabla.delete(*self.tabla.get_children())
         cur = self.db.execute("SELECT * FROM clientes")
         for fila in cur.fetchall():
@@ -60,7 +57,6 @@ class ClientesView(tk.Toplevel):
         print("Datos de clientes cargados correctamente.")
 
     def agregar_cliente(self):
-        """Agrega un nuevo cliente."""
         nombre = self.entries["Nombre:"].get().strip()
         correo = self.entries["Correo:"].get().strip()
         telefono = self.entries["Teléfono:"].get().strip()
@@ -78,7 +74,6 @@ class ClientesView(tk.Toplevel):
         print("Cliente agregado a la base de datos.")
 
     def actualizar_cliente(self):
-        """Actualiza la información del cliente seleccionado."""
         sel = self.tabla.selection()
         if not sel:
             messagebox.showwarning("Advertencia", "Selecciona un cliente para actualizar.")
@@ -100,7 +95,6 @@ class ClientesView(tk.Toplevel):
         print(f"Cliente con ID {cliente_id} actualizado.")
 
     def eliminar_cliente(self):
-        """Elimina el cliente seleccionado."""
         sel = self.tabla.selection()
         if not sel:
             messagebox.showwarning("Advertencia", "Selecciona un cliente para eliminar.")
@@ -115,7 +109,6 @@ class ClientesView(tk.Toplevel):
         print(f"Cliente con ID {cliente_id} eliminado.")
 
     def _on_seleccionar(self, event):
-        """Rellena los campos al seleccionar un cliente."""
         sel = self.tabla.selection()
         if not sel:
             return
@@ -126,7 +119,6 @@ class ClientesView(tk.Toplevel):
         print(f"Cliente seleccionado (ID {valores[0]}).")
 
     def _limpiar_campos(self):
-        """Limpia los campos de entrada."""
         for entry in self.entries.values():
             entry.delete(0, tk.END)
         print("Campos del formulario limpiados.")

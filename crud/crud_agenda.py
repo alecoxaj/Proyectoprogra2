@@ -64,7 +64,6 @@ class AgendaView(tk.Toplevel):
         self.tabla.bind("<<TreeviewSelect>>", self.on_seleccionar)
 
     def cargar_datos(self):
-        """Carga todos los eventos desde la base de datos"""
         self.tabla.delete(*self.tabla.get_children())
         cur = self.db.execute("SELECT * FROM agenda")
         for fila in cur.fetchall():
@@ -72,7 +71,6 @@ class AgendaView(tk.Toplevel):
         print("Datos de agenda cargados.")
 
     def agregar_evento(self):
-        """Inserta un nuevo evento en la tabla agenda"""
         cliente = self.cliente_id.get().strip()
         servicio = self.servicio_id.get().strip()
         fecha = self.fecha.get()
@@ -90,7 +88,6 @@ class AgendaView(tk.Toplevel):
         self.limpiar_campos()
 
     def actualizar_evento(self):
-        """Actualiza un evento seleccionado"""
         sel = self.tabla.selection()
         if not sel:
             messagebox.showwarning("Advertencia", "Selecciona un evento para actualizar.")
@@ -114,7 +111,6 @@ class AgendaView(tk.Toplevel):
         self.limpiar_campos()
 
     def eliminar_evento(self):
-        """Elimina el evento seleccionado"""
         sel = self.tabla.selection()
         if not sel:
             messagebox.showwarning("Advertencia", "Selecciona un evento para eliminar.")

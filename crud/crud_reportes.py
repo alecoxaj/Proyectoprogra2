@@ -8,8 +8,6 @@ COLOR_BOTON = "#E6B325"
 COLOR_TEXTO_OSCURO = "#333333"
 
 class ReportesView(tk.Toplevel):
-    """Módulo de Reportes - Espacio Creativo (POO + SOLID)."""
-
     def __init__(self, master=None):
         super().__init__(master)
         self.title("Reportes - Espacio Creativo")
@@ -47,7 +45,6 @@ class ReportesView(tk.Toplevel):
                   pady=6).pack(pady=10)
 
     def generar_reporte(self):
-        """Genera un reporte de ventas agrupadas por servicio."""
         try:
             self.tabla.delete(*self.tabla.get_children())
             sql = """
