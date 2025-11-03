@@ -1,12 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
 
-from crud.crud_clientes import ClientesView
-from crud.crud_servicios import ServiciosView
-from crud.crud_usuarios import UsuariosView
-from crud.crud_agenda import AgendaView
-from crud.crud_ventas import VentasView
-from crud.crud_reportes import ReportesView
+from crud.crud_clientes import ventana_clientes
+from crud.crud_servicios import ventana_servicios
+from crud.crud_usuarios import ventana_usuarios
+from crud.crud_agenda import ventana_agenda
+from crud.crud_ventas import ventana_ventas
+from crud.crud_reportes import ventana_reportes
 
 COLOR_FONDO_VENTANA = "#FFF9E6"
 COLOR_FONDO_FRAME = "#FFF3C4"
@@ -43,12 +43,12 @@ class MainMenuView:
 
         if self.rol == "admin":
             opciones = [
-                ("Gestión de Usuarios", lambda: UsuariosView(self.root)),
-                ("Clientes", lambda: ClientesView(self.root)),
-                ("Servicios", lambda: ServiciosView(self.root)),
-                ("Agenda", lambda: AgendaView(self.root)),
-                ("Ventas", lambda: VentasView(self.root)),
-                ("Reportes", lambda: ReportesView(self.root))
+                ("Gestión de Usuarios", lambda: ventana_usuarios()),
+                ("Clientes", lambda: ventana_clientes()),
+                ("Servicios", lambda: ventana_servicios()),
+                ("Agenda", lambda: ventana_agenda()),
+                ("Ventas", lambda: ventana_ventas()),
+                ("Reportes", lambda: ventana_reportes())
             ]
         else:
             opciones = [
