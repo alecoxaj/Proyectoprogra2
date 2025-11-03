@@ -107,7 +107,7 @@ def ventana_servicios():
 
     tabla.bind("<<TreeviewSelect>>", seleccionar)
 
-    # Botones
+
     tk.Button(ventana, text="Agregar", command=agregar_servicio, bg="#b8f2e6").grid(row=4, column=0, padx=6)
     tk.Button(ventana, text="Actualizar", command=actualizar_servicio, bg="#fff3b0").grid(row=4, column=1, padx=6)
     tk.Button(ventana, text="Eliminar", command=eliminar_servicio, bg="#ffd6d6").grid(row=4, column=2, padx=6)
