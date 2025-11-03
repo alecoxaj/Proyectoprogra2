@@ -23,7 +23,7 @@ class LoginView:
             widget.destroy()
 
         try:
-            imagen_logo = Image.open("Espacio.naranja.png").resize((150, 160))
+            imagen_logo = Image.open("espacio.naranja.png").resize((150, 160))
             self.root.logo = ImageTk.PhotoImage(imagen_logo)
             tk.Label(self.root, image=self.root.logo, bg=self.COLOR_FONDO_VENTANA).pack(pady=(20, 5))
         except Exception as e:
