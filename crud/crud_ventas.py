@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 import sqlite3
 from datetime import date
 
-DB_PATH = "espacio_creativo.db"
+DB_PATH = "../espacio_creativo.db"
 
 def conectar():
     return sqlite3.connect(DB_PATH)

@@ -20,4 +20,4 @@ class App:
         MainMenuView(self.root, rol)
 
 if __name__ == "__main__":
-    App()
+    LoginView()
