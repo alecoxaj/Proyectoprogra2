@@ -1,124 +1,122 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from core.database import DatabaseManager
+import sqlite3
 
-COLOR_FONDO_VENTANA = "#FFF9E6"
-COLOR_FONDO_FRAME = "#FFF3C4"
-COLOR_BOTON = "#E6B325"
-COLOR_TEXTO_OSCURO = "#333333"
+DB_PATH = "espacio_creativo.db"
 
-class ClientesView(tk.Toplevel):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.title("Gestión de Clientes - Espacio Creativo")
-        self.geometry("700x420")
-        self.config(bg=COLOR_FONDO_VENTANA)
-        self.db = DatabaseManager()
-        self._crear_interfaz()
-        self.cargar_datos()
-        print("Ventana de clientes inicializada.")
+def conectar():
+    return sqlite3.connect(DB_PATH)
 
-    def _crear_interfaz(self):
-        frame = tk.Frame(self, bg=COLOR_FONDO_FRAME, padx=15, pady=10)
-        frame.pack(fill="both", expand=True, pady=10)
+def ventana_clientes():
+    ventana = tk.Toplevel()
+    ventana.title("Gestión de Clientes - Espacio Creativo")
+    ventana.geometry("650x420")
+    ventana.config(bg="#fdfcfb")
 
-        labels = ["Nombre:", "Correo:", "Teléfono:", "Tipo de servicio:"]
-        self.entries = {}
-        for i, label_text in enumerate(labels):
-            tk.Label(frame, text=label_text, bg=COLOR_FONDO_FRAME, fg=COLOR_TEXTO_OSCURO).grid(row=i, column=0, sticky="e", padx=5, pady=5)
-            entry = tk.Entry(frame, width=40)
-            entry.grid(row=i, column=1, padx=5, pady=5)
-            self.entries[label_text] = entry
+    tk.Label(ventana, text="Nombre:").grid(row=0, column=0, padx=6, pady=6, sticky="e")
+    entry_nombre = tk.Entry(ventana, width=30)
+    entry_nombre.grid(row=0, column=1)
 
-        botones = [
-            ("Agregar", COLOR_BOTON, self.agregar_cliente),
-            ("Actualizar", "#FFD966", self.actualizar_cliente),
-            ("Eliminar", "#F4B183", self.eliminar_cliente),
-            ("Cargar", "#A9D18E", self.cargar_datos)
-        ]
-        for i, (texto, color, comando) in enumerate(botones):
-            tk.Button(frame, text=texto, bg=color, fg=COLOR_TEXTO_OSCURO,
-                      relief="flat", command=comando, width=12).grid(row=4, column=i, pady=10, padx=5)
+    tk.Label(ventana, text="Teléfono:").grid(row=1, column=0, padx=6, pady=6, sticky="e")
+    entry_telefono = tk.Entry(ventana, width=30)
+    entry_telefono.grid(row=1, column=1)
 
-        columnas = ("id", "nombre", "correo", "telefono", "tipo_servicio")
-        self.tabla = ttk.Treeview(frame, columns=columnas, show="headings", height=10)
-        for col in columnas:
-            self.tabla.heading(col, text=col.capitalize())
-            self.tabla.column(col, width=120 if col != "nombre" else 180)
-        self.tabla.grid(row=5, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
+    tk.Label(ventana, text="Correo:").grid(row=2, column=0, padx=6, pady=6, sticky="e")
+    entry_correo = tk.Entry(ventana, width=30)
+    entry_correo.grid(row=2, column=1)
 
-        self.tabla.bind("<<TreeviewSelect>>", self._on_seleccionar)
+    tk.Label(ventana, text="Dirección:").grid(row=3, column=0, padx=6, pady=6, sticky="e")
+    entry_direccion = tk.Entry(ventana, width=30)
+    entry_direccion.grid(row=3, column=1)
 
-    def cargar_datos(self):
-        self.tabla.delete(*self.tabla.get_children())
-        cur = self.db.execute("SELECT * FROM clientes")
+    cols = ("id", "nombre", "telefono", "correo", "direccion")
+    tabla = ttk.Treeview(ventana, columns=cols, show="headings", height=12)
+    for c in cols:
+        tabla.heading(c, text=c.capitalize())
+    tabla.grid(row=5, column=0, columnspan=4, padx=10, pady=10)
+
+    clientes_cache = []
+
+    def cargar_datos():
+        tabla.delete(*tabla.get_children())
+        conn = conectar()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM clientes")
+        clientes_cache.clear()
         for fila in cur.fetchall():
-            self.tabla.insert("", tk.END, values=fila)
-        print("Datos de clientes cargados correctamente.")
+            clientes_cache.append(fila)
+            tabla.insert("", tk.END, values=fila)
+        conn.close()
+        print("Commit: Clientes cargados en tabla y cache.")
 
-    def agregar_cliente(self):
-        nombre = self.entries["Nombre:"].get().strip()
-        correo = self.entries["Correo:"].get().strip()
-        telefono = self.entries["Teléfono:"].get().strip()
-        tipo = self.entries["Tipo de servicio:"].get().strip()
-
-        if not nombre:
-            messagebox.showwarning("Campo obligatorio", "El campo 'Nombre' es obligatorio.")
+    def agregar_cliente():
+        n, t, c, d = entry_nombre.get(), entry_telefono.get(), entry_correo.get(), entry_direccion.get()
+        if not n:
+            messagebox.showwarning("Advertencia", "El nombre es obligatorio.")
             return
+        conn = conectar()
+        cur = conn.cursor()
+        cur.execute("INSERT INTO clientes (nombre, telefono, correo, direccion) VALUES (?,?,?,?)", (n, t, c, d))
+        conn.commit()
+        conn.close()
+        print(f"Commit: Cliente '{n}' agregado.")
+        cargar_datos()
 
-        sql = "INSERT INTO clientes (nombre, correo, telefono, tipo_servicio) VALUES (?, ?, ?, ?)"
-        self.db.execute(sql, (nombre, correo, telefono, tipo), commit=True)
-        self.cargar_datos()
-        self._limpiar_campos()
-        messagebox.showinfo("Éxito", "Cliente agregado correctamente.")
-        print("Cliente agregado a la base de datos.")
-
-    def actualizar_cliente(self):
-        sel = self.tabla.selection()
+    def eliminar_cliente():
+        sel = tabla.selection()
         if not sel:
-            messagebox.showwarning("Advertencia", "Selecciona un cliente para actualizar.")
+            messagebox.showwarning("Selecciona", "Selecciona un cliente.")
             return
-        cliente_id = self.tabla.item(sel[0])["values"][0]
+        cid = tabla.item(sel)["values"][0]
+        conn = conectar()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM clientes WHERE id=?", (cid,))
+        conn.commit()
+        conn.close()
+        print(f"Commit: Cliente id={cid} eliminado.")
+        cargar_datos()
 
-        sql = """UPDATE clientes 
-                 SET nombre=?, correo=?, telefono=?, tipo_servicio=? 
-                 WHERE id=?"""
-        self.db.execute(sql, (
-            self.entries["Nombre:"].get().strip(),
-            self.entries["Correo:"].get().strip(),
-            self.entries["Teléfono:"].get().strip(),
-            self.entries["Tipo de servicio:"].get().strip(),
-            cliente_id
-        ), commit=True)
-        self.cargar_datos()
-        messagebox.showinfo("Éxito", "Cliente actualizado correctamente.")
-        print(f"Cliente con ID {cliente_id} actualizado.")
-
-    def eliminar_cliente(self):
-        sel = self.tabla.selection()
+    def actualizar_cliente():
+        sel = tabla.selection()
         if not sel:
-            messagebox.showwarning("Advertencia", "Selecciona un cliente para eliminar.")
+            messagebox.showwarning("Selecciona", "Selecciona un cliente.")
             return
-        cliente_id = self.tabla.item(sel[0])["values"][0]
-        if not messagebox.askyesno("Confirmar", "¿Deseas eliminar este cliente?"):
-            return
+        cid = tabla.item(sel)["values"][0]
+        n, t, c, d = entry_nombre.get(), entry_telefono.get(), entry_correo.get(), entry_direccion.get()
+        conn = conectar()
+        cur = conn.cursor()
+        cur.execute("UPDATE clientes SET nombre=?, telefono=?, correo=?, direccion=? WHERE id=?", (n, t, c, d, cid))
+        conn.commit()
+        conn.close()
+        print(f"Commit: Cliente id={cid} actualizado.")
+        cargar_datos()
 
-        self.db.execute("DELETE FROM clientes WHERE id=?", (cliente_id,), commit=True)
-        self.cargar_datos()
-        messagebox.showinfo("Éxito", "Cliente eliminado correctamente.")
-        print(f"Cliente con ID {cliente_id} eliminado.")
+    def buscar_cliente():
+        key = entry_nombre.get().strip().lower()
+        for c in clientes_cache:
+            if key in c[1].lower():
+                messagebox.showinfo("Resultado", f"Cliente encontrado:\n{c}")
+                print(f"Commit: Cliente '{c[1]}' encontrado (búsqueda secuencial).")
+                return
+        messagebox.showinfo("No encontrado", "No se encontró el cliente.")
+        print("Commit: búsqueda secuencial no encontró resultado.")
 
-    def _on_seleccionar(self, event):
-        sel = self.tabla.selection()
-        if not sel:
-            return
-        valores = self.tabla.item(sel[0])["values"]
-        for (key, entry), value in zip(self.entries.items(), valores[1:]):
-            entry.delete(0, tk.END)
-            entry.insert(0, value)
-        print(f"Cliente seleccionado (ID {valores[0]}).")
+    def seleccionar(event):
+        sel = tabla.selection()
+        if not sel: return
+        r = tabla.item(sel)["values"]
+        entry_nombre.delete(0, tk.END); entry_nombre.insert(0, r[1])
+        entry_telefono.delete(0, tk.END); entry_telefono.insert(0, r[2])
+        entry_correo.delete(0, tk.END); entry_correo.insert(0, r[3])
+        entry_direccion.delete(0, tk.END); entry_direccion.insert(0, r[4])
 
-    def _limpiar_campos(self):
-        for entry in self.entries.values():
-            entry.delete(0, tk.END)
-        print("Campos del formulario limpiados.")
+    tabla.bind("<<TreeviewSelect>>", seleccionar)
+
+    # Botones
+    tk.Button(ventana, text="Agregar", command=agregar_cliente, bg="#b8f2e6").grid(row=4, column=0, padx=6)
+    tk.Button(ventana, text="Actualizar", command=actualizar_cliente, bg="#fff3b0").grid(row=4, column=1, padx=6)
+    tk.Button(ventana, text="Eliminar", command=eliminar_cliente, bg="#ffd6d6").grid(row=4, column=2, padx=6)
+    tk.Button(ventana, text="Buscar", command=buscar_cliente, bg="#dcedc1").grid(row=4, column=3, padx=6)
+
+    cargar_datos()
+    print("Commit: Ventana de Clientes inicializada.")
