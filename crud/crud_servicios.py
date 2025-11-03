@@ -1,144 +1,117 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from core.database import DatabaseManager
+import sqlite3
 
-COLOR_FONDO_VENTANA = "#FFF9E6"
-COLOR_FONDO_FRAME = "#FFF3C4"
-COLOR_BOTON = "#E6B325"
-COLOR_TEXTO_OSCURO = "#333333"
+DB_PATH = "espacio_creativo.db"
 
-class ServiciosView(tk.Toplevel):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.title("Gestión de Servicios - Espacio Creativo")
-        self.geometry("700x420")
-        self.config(bg=COLOR_FONDO_VENTANA)
-        self.db = DatabaseManager()
-        self._crear_interfaz()
-        self.cargar_datos()
-        print("Ventana de Servicios inicializada.")
+def conectar():
+    return sqlite3.connect(DB_PATH)
 
-    def _crear_interfaz(self):
-        frame = tk.Frame(self, bg=COLOR_FONDO_FRAME, padx=15, pady=10)
-        frame.pack(fill="both", expand=True, pady=10)
+def ventana_servicios():
+    ventana = tk.Toplevel()
+    ventana.title("Gestión de Servicios - Espacio Creativo")
+    ventana.geometry("650x420")
+    ventana.config(bg="#fbfdfd")
 
-        etiquetas = ["Nombre:", "Descripción:", "Precio:"]
-        for i, texto in enumerate(etiquetas):
-            tk.Label(frame, text=texto, bg=COLOR_FONDO_FRAME, fg=COLOR_TEXTO_OSCURO).grid(
-                row=i, column=0, sticky="e", padx=5, pady=5
-            )
 
-        self.entry_nombre = tk.Entry(frame, width=40)
-        self.entry_nombre.grid(row=0, column=1, padx=5, pady=5)
-        self.entry_descripcion = tk.Entry(frame, width=40)
-        self.entry_descripcion.grid(row=1, column=1, padx=5, pady=5)
-        self.entry_precio = tk.Entry(frame, width=20)
-        self.entry_precio.grid(row=2, column=1, padx=5, pady=5)
+    tk.Label(ventana, text="Nombre:").grid(row=0, column=0, padx=6, pady=6, sticky="e")
+    entry_nombre = tk.Entry(ventana, width=30); entry_nombre.grid(row=0, column=1)
+    tk.Label(ventana, text="Descripción:").grid(row=1, column=0, padx=6, pady=6, sticky="e")
+    entry_desc = tk.Entry(ventana, width=30); entry_desc.grid(row=1, column=1)
+    tk.Label(ventana, text="Precio:").grid(row=2, column=0, padx=6, pady=6, sticky="e")
+    entry_precio = tk.Entry(ventana, width=30); entry_precio.grid(row=2, column=1)
 
-        botones = [
-            ("Agregar", self.agregar_servicio, COLOR_BOTON),
-            ("Actualizar", self.actualizar_servicio, "#FFD966"),
-            ("Eliminar", self.eliminar_servicio, "#F4B183"),
-            ("Cargar", self.cargar_datos, "#A9D18E"),
-        ]
 
-        for i, (texto, comando, color) in enumerate(botones):
-            tk.Button(frame, text=texto, bg=color, fg=COLOR_TEXTO_OSCURO, relief="flat",
-                      command=comando, width=12).grid(row=3, column=i, pady=10, padx=4)
+    cols = ("id", "nombre", "descripcion", "precio")
+    tabla = ttk.Treeview(ventana, columns=cols, show="headings", height=12)
+    for c in cols:
+        tabla.heading(c, text=c.capitalize())
+    tabla.grid(row=5, column=0, columnspan=4, padx=10, pady=10)
 
-        columnas = ("id", "nombre", "descripcion", "precio")
-        self.tabla = ttk.Treeview(frame, columns=columnas, show="headings", height=10)
+    servicios_cache = []
 
-        for col in columnas:
-            self.tabla.heading(col, text=col.capitalize())
-            self.tabla.column(col, width=150 if col != "descripcion" else 250)
+    def cargar_datos():
+        tabla.delete(*tabla.get_children())
+        conn = conectar(); cur = conn.cursor()
+        cur.execute("SELECT * FROM servicios")
+        servicios_cache.clear()
+        for fila in cur.fetchall():
+            servicios_cache.append(fila)
+            tabla.insert("", tk.END, values=fila)
+        conn.close()
+        print("Commit: Servicios cargados en tabla y cache.")
 
-        self.tabla.grid(row=5, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
-        self.tabla.bind("<<TreeviewSelect>>", self._seleccionar_fila)
-
-    def cargar_datos(self):
-        self.tabla.delete(*self.tabla.get_children())
+    def agregar_servicio():
+        n, d, p = entry_nombre.get(), entry_desc.get(), entry_precio.get()
+        if not (n and p):
+            messagebox.showwarning("Advertencia", "Nombre y precio son obligatorios.")
+            return
         try:
-            cur = self.db.execute("SELECT * FROM servicios")
-            for fila in cur.fetchall():
-                self.tabla.insert("", tk.END, values=fila)
-            print("Datos de servicios cargados correctamente.")
-        except Exception as e:
-            messagebox.showerror("Error", f"No se pudieron cargar los servicios.\n{e}")
-
-    def agregar_servicio(self):
-        nombre = self.entry_nombre.get().strip()
-        descripcion = self.entry_descripcion.get().strip()
-        precio = self.entry_precio.get().strip()
-
-        if not nombre:
-            messagebox.showwarning("Campo obligatorio", "El campo 'Nombre' es obligatorio.")
+            precio_f = float(p)
+        except:
+            messagebox.showerror("Error", "El precio debe ser numérico.")
             return
+        conn = conectar(); cur = conn.cursor()
+        cur.execute("INSERT INTO servicios (nombre, descripcion, precio) VALUES (?, ?, ?)", (n, d, precio_f))
+        conn.commit(); conn.close()
+        print(f"Commit: Servicio '{n}' agregado.")
+        cargar_datos()
 
+    def eliminar_servicio():
+        sel = tabla.selection()
+        if not sel:
+            messagebox.showwarning("Selecciona", "Selecciona un servicio.")
+            return
+        sid = tabla.item(sel)["values"][0]
+        conn = conectar(); cur = conn.cursor()
+        cur.execute("DELETE FROM servicios WHERE id=?", (sid,))
+        conn.commit(); conn.close()
+        print(f"Commit: Servicio id={sid} eliminado.")
+        cargar_datos()
+
+    def actualizar_servicio():
+        sel = tabla.selection()
+        if not sel:
+            messagebox.showwarning("Selecciona", "Selecciona un servicio.")
+            return
+        sid = tabla.item(sel)["values"][0]
+        n, d, p = entry_nombre.get(), entry_desc.get(), entry_precio.get()
         try:
-            precio_valor = float(precio)
-        except ValueError:
-            messagebox.showerror("Error", "El precio debe ser un número válido.")
+            precio_f = float(p)
+        except:
+            messagebox.showerror("Error", "El precio debe ser numérico.")
             return
+        conn = conectar(); cur = conn.cursor()
+        cur.execute("UPDATE servicios SET nombre=?, descripcion=?, precio=? WHERE id=?", (n, d, precio_f, sid))
+        conn.commit(); conn.close()
+        print(f"Commit: Servicio id={sid} actualizado.")
+        cargar_datos()
 
-        sql = "INSERT INTO servicios (nombre, descripcion, precio) VALUES (?, ?, ?)"
-        self.db.execute(sql, (nombre, descripcion, precio_valor), commit=True)
-        self.cargar_datos()
-        self._limpiar_campos()
-        print("Servicio agregado exitosamente.")
+    def buscar_servicio():
+        key = entry_nombre.get().strip().lower()
+        for s in servicios_cache:
+            if key in s[1].lower():
+                messagebox.showinfo("Resultado", f"Servicio encontrado:\n{s}")
+                print(f"Commit: Servicio '{s[1]}' encontrado (búsqueda secuencial).")
+                return
+        messagebox.showinfo("No encontrado", "No se encontró el servicio.")
+        print("Commit: búsqueda secuencial no encontró resultado.")
 
-    def actualizar_servicio(self):
-        seleccion = self.tabla.selection()
-        if not seleccion:
-            messagebox.showwarning("Advertencia", "Selecciona un servicio para actualizar.")
-            return
+    def seleccionar(event):
+        sel = tabla.selection()
+        if not sel: return
+        r = tabla.item(sel)["values"]
+        entry_nombre.delete(0, tk.END); entry_nombre.insert(0, r[1])
+        entry_desc.delete(0, tk.END); entry_desc.insert(0, r[2])
+        entry_precio.delete(0, tk.END); entry_precio.insert(0, r[3])
 
-        servicio_id = self.tabla.item(seleccion[0])["values"][0]
-        try:
-            precio_valor = float(self.entry_precio.get())
-        except ValueError:
-            messagebox.showerror("Error", "El precio debe ser un número válido.")
-            return
+    tabla.bind("<<TreeviewSelect>>", seleccionar)
 
-        sql = "UPDATE servicios SET nombre=?, descripcion=?, precio=? WHERE id=?"
-        self.db.execute(sql, (
-            self.entry_nombre.get(),
-            self.entry_descripcion.get(),
-            precio_valor,
-            servicio_id
-        ), commit=True)
+    # Botones
+    tk.Button(ventana, text="Agregar", command=agregar_servicio, bg="#b8f2e6").grid(row=4, column=0, padx=6)
+    tk.Button(ventana, text="Actualizar", command=actualizar_servicio, bg="#fff3b0").grid(row=4, column=1, padx=6)
+    tk.Button(ventana, text="Eliminar", command=eliminar_servicio, bg="#ffd6d6").grid(row=4, column=2, padx=6)
+    tk.Button(ventana, text="Buscar", command=buscar_servicio, bg="#dcedc1").grid(row=4, column=3, padx=6)
 
-        self.cargar_datos()
-        print("Servicio actualizado correctamente.")
-
-    def eliminar_servicio(self):
-        seleccion = self.tabla.selection()
-        if not seleccion:
-            messagebox.showwarning("Advertencia", "Selecciona un servicio para eliminar.")
-            return
-
-        servicio_id = self.tabla.item(seleccion[0])["values"][0]
-        if not messagebox.askyesno("Confirmar", "¿Deseas eliminar este servicio?"):
-            return
-
-        sql = "DELETE FROM servicios WHERE id=?"
-        self.db.execute(sql, (servicio_id,), commit=True)
-        self.cargar_datos()
-        print("Servicio eliminado correctamente.")
-
-    def _seleccionar_fila(self, event):
-        seleccion = self.tabla.selection()
-        if not seleccion:
-            return
-        valores = self.tabla.item(seleccion[0])["values"]
-        self.entry_nombre.delete(0, tk.END)
-        self.entry_nombre.insert(0, valores[1])
-        self.entry_descripcion.delete(0, tk.END)
-        self.entry_descripcion.insert(0, valores[2])
-        self.entry_precio.delete(0, tk.END)
-        self.entry_precio.insert(0, valores[3])
-        print("Servicio seleccionado para edición.")
-
-    def _limpiar_campos(self):
-        for entry in [self.entry_nombre, self.entry_descripcion, self.entry_precio]:
-            entry.delete(0, tk.END)
+    cargar_datos()
+    print("Commit: Ventana de Servicios inicializada.")
