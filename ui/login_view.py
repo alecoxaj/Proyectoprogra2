@@ -3,12 +3,7 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 import sqlite3
 
-from crud.crud_clientes import ClientesView
-from crud.crud_servicios import ServiciosView
-from crud.crud_usuarios import UsuariosView
-from crud.crud_agenda import AgendaView
-from crud.crud_ventas import VentasView
-from crud.crud_reportes import ReportesView
+from ui.main_menu_view import MainMenuView
 
 class LoginView:
     DB_PATH = "espacio_creativo.db"
@@ -98,46 +93,11 @@ class LoginView:
         if rol:
             messagebox.showinfo("Acceso concedido", f"Bienvenido al sistema ({rol})")
             self.root.withdraw()
-            self._abrir_menu_principal(rol)
+            self.abrir_menu_principal(rol)
         else:
             messagebox.showerror("Error", "Usuario o contraseña incorrectos")
 
-    def _abrir_menu_principal(self, rol):
-        menu = tk.Toplevel(self.root)
-        menu.title("Menú Principal - Espacio Creativo")
-        menu.geometry("450x420")
-        menu.config(bg=self.COLOR_FONDO_VENTANA)
-
-        tk.Label(menu, text=f"Bienvenido ({rol})",
-                 font=("Arial", 14, "bold"),
-                 bg=self.COLOR_FONDO_VENTANA,
-                 fg=self.COLOR_TEXTO_OSCURO).pack(pady=15)
-
-        if rol == "admin":
-            opciones = [
-                ("Gestión de Usuarios", lambda: UsuariosView(menu)),
-                ("Clientes", lambda: ClientesView(menu)),
-                ("Servicios", lambda: ServiciosView(menu)),
-                ("Agenda", lambda: AgendaView(menu)),
-                ("Ventas", lambda: VentasView(menu)),
-                ("Reportes", lambda: ReportesView(menu))
-            ]
-        else:
-            opciones = [
-                ("Clientes", lambda: ClientesView(menu)),
-                ("Agenda", lambda: AgendaView(menu)),
-                ("Ventas", lambda: VentasView(menu))
-            ]
-
-        for texto, comando in opciones:
-            tk.Button(menu, text=texto, width=25, bg=self.COLOR_BOTON,
-                      fg=self.COLOR_TEXTO_OSCURO, relief="ridge",
-                      font=("Arial", 11, "bold"),
-                      command=comando).pack(pady=5)
-
-        tk.Button(menu, text="Cerrar sesión",
-                  command=lambda: [menu.destroy(), self.root.deiconify()],
-                  bg=self.COLOR_BOTON, fg=self.COLOR_TEXTO_OSCURO,
-                  font=("Arial", 11, "bold"), relief="flat").pack(pady=15)
-
-        print(f"Menú principal cargado para el rol '{rol}'.")
+    def abrir_menu_principal(self, rol):
+        ventana_menu = tk.Toplevel(self.root)
+        MainMenuView(ventana_menu, rol)
+        print(f"Menú principal abierto para el rol '{rol}'.")
