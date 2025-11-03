@@ -1,116 +1,84 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from datetime import date
-from core.database import DatabaseManager
+import sqlite3
+from collections import deque
+from datetime import datetime
 
-COLOR_FONDO_VENTANA = "#FFF9E6"
-COLOR_FONDO_FRAME = "#FFF3C4"
-COLOR_BOTON = "#E6B325"
-COLOR_TEXTO_OSCURO = "#333333"
+DB_PATH = "espacio_creativo.db"
 
-class VentasView(tk.Toplevel):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.title("Gestión de Ventas - Espacio Creativo")
-        self.geometry("700x420")
-        self.config(bg=COLOR_FONDO_VENTANA)
-        self.db = DatabaseManager()
-        self._crear_interfaz()
-        self.cargar_datos()
-        print("Ventana de Ventas inicializada.")
+def conectar():
+    return sqlite3.connect(DB_PATH)
 
-    def _crear_interfaz(self):
-        frame = tk.Frame(self, bg=COLOR_FONDO_FRAME, padx=15, pady=10)
-        frame.pack(fill="both", expand=True, pady=10)
+ventas_queue = deque()
 
-        campos = [
-            ("Cliente ID:", "cliente_id"),
-            ("Servicio ID:", "servicio_id"),
-            ("Total:", "total"),
-        ]
-        self.entries = {}
-        for i, (texto, key) in enumerate(campos):
-            tk.Label(frame, text=texto, bg=COLOR_FONDO_FRAME, fg=COLOR_TEXTO_OSCURO).grid(row=i, column=0, sticky="e", padx=5, pady=5)
-            entry = tk.Entry(frame, width=35)
-            entry.grid(row=i, column=1, padx=5, pady=5)
-            self.entries[key] = entry
+def ventana_ventas():
+    ventana = tk.Toplevel()
+    ventana.title("Ventas - Espacio Creativo")
+    ventana.geometry("700x420")
+    ventana.config(bg="#fbfbff")
 
-        botones = [
-            ("Agregar", self.agregar_venta, COLOR_BOTON),
-            ("Eliminar", self.eliminar_venta, "#F4B183"),
-            ("Cargar", self.cargar_datos, "#A9D18E")
-        ]
-        for i, (texto, comando, color) in enumerate(botones):
-            tk.Button(frame, text=texto, bg=color, fg=COLOR_TEXTO_OSCURO, relief="flat",
-                      command=comando, width=12).grid(row=4, column=i, pady=10, padx=4)
+    tk.Label(ventana, text="Cliente ID:").grid(row=0, column=0, padx=6, pady=6)
+    entry_cliente = tk.Entry(ventana, width=20); entry_cliente.grid(row=0, column=1)
+    tk.Label(ventana, text="Servicio ID:").grid(row=1, column=0, padx=6, pady=6)
+    entry_servicio = tk.Entry(ventana, width=20); entry_servicio.grid(row=1, column=1)
+    tk.Label(ventana, text="Total:").grid(row=2, column=0, padx=6, pady=6)
+    entry_total = tk.Entry(ventana, width=15); entry_total.grid(row=2, column=1)
 
-        columnas = ("id", "cliente_id", "servicio_id", "fecha", "total")
-        self.tabla = ttk.Treeview(frame, columns=columnas, show="headings", height=10)
-        for col in columnas:
-            self.tabla.heading(col, text=col.capitalize())
-            self.tabla.column(col, width=120)
-        self.tabla.grid(row=5, column=0, columnspan=4, padx=10, pady=10, sticky="nsew")
+    cols = ("id","cliente_id","servicio_id","fecha","total")
+    tabla = ttk.Treeview(ventana, columns=cols, show="headings", height=12)
+    for c in cols: tabla.heading(c, text=c.capitalize())
+    tabla.grid(row=6, column=0, columnspan=6, padx=10, pady=10)
 
-        self.tabla.bind("<<TreeviewSelect>>", self._seleccionar_fila)
+    def cargar_datos():
+        tabla.delete(*tabla.get_children())
+        conn = conectar(); cur = conn.cursor()
+        cur.execute("SELECT * FROM ventas")
+        for f in cur.fetchall(): tabla.insert("", tk.END, values=f)
+        conn.close()
+        print("Commit: Ventas cargadas desde BD.")
 
-    def cargar_datos(self):
+    def encolar_venta():
         try:
-            self.tabla.delete(*self.tabla.get_children())
-            cur = self.db.execute("SELECT * FROM ventas ORDER BY fecha DESC")
-            for fila in cur.fetchall():
-                self.tabla.insert("", tk.END, values=fila)
-            print("Datos de ventas cargados.")
-        except Exception as e:
-            messagebox.showerror("Error", f"No se pudieron cargar los datos.\n{e}")
-
-    def agregar_venta(self):
-        cliente = self.entries["cliente_id"].get().strip()
-        servicio = self.entries["servicio_id"].get().strip()
-        total = self.entries["total"].get().strip()
-
-        if not cliente or not servicio or not total:
-            messagebox.showwarning("Campos vacíos", "Todos los campos son obligatorios.")
+            cid = int(entry_cliente.get().strip()); sid = int(entry_servicio.get().strip())
+            total = float(entry_total.get().strip())
+        except:
+            messagebox.showerror("Error", "Datos inválidos.")
+            print("Commit: Error al encolar venta (datos inválidos).")
             return
+        venta = {"cliente_id": cid, "servicio_id": sid, "total": total, "fecha": datetime.now().isoformat()}
+        ventas_queue.append(venta)
+        print("Commit: Venta encolada (cola FIFO).")
+        messagebox.showinfo("Cola", f"Venta en cola. Posición: {len(ventas_queue)}")
 
-        try:
-            total_valor = float(total)
-        except ValueError:
-            messagebox.showerror("Error", "El campo 'Total' debe ser un número válido.")
+    def procesar_venta():
+        if not ventas_queue:
+            messagebox.showinfo("Cola", "No hay ventas en cola.")
+            print("Commit: Intento de procesar cola vacía.")
             return
+        v = ventas_queue.popleft()
+        conn = conectar(); cur = conn.cursor()
+        cur.execute("INSERT INTO ventas (cliente_id, servicio_id, fecha, total) VALUES (?,?,?,?)",
+                    (v["cliente_id"], v["servicio_id"], v["fecha"], v["total"]))
+        conn.commit(); conn.close()
+        print(f"Commit: Venta procesada e insertada en BD (total={v['total']}).")
+        cargar_datos()
 
-        sql = "INSERT INTO ventas (cliente_id, servicio_id, fecha, total) VALUES (?, ?, ?, ?)"
-        params = (cliente, servicio, date.today().isoformat(), total_valor)
-        self.db.execute(sql, params, commit=True)
-        self.cargar_datos()
-        self._limpiar_campos()
-        print("Venta registrada correctamente.")
-
-    def eliminar_venta(self):
-        seleccion = self.tabla.selection()
-        if not seleccion:
-            messagebox.showwarning("Advertencia", "Selecciona una venta para eliminar.")
+    def eliminar_venta_bd():
+        sel = tabla.selection()
+        if not sel:
+            messagebox.showwarning("Selecciona", "Selecciona una venta para eliminar.")
             return
+        vid = tabla.item(sel)["values"][0]
+        conn = conectar(); cur = conn.cursor()
+        cur.execute("DELETE FROM ventas WHERE id=?", (vid,))
+        conn.commit(); conn.close()
+        print(f"Commit: Venta id={vid} eliminada de BD.")
+        cargar_datos()
 
-        venta_id = self.tabla.item(seleccion[0])["values"][0]
-        if not messagebox.askyesno("Confirmar", "¿Deseas eliminar esta venta?"):
-            return
+    tk.Button(ventana, text="Encolar venta", command=encolar_venta, bg="#bce0ff").grid(row=4, column=0, padx=6)
+    tk.Button(ventana, text="Procesar siguiente venta", command=procesar_venta, bg="#d1f7c4").grid(row=4, column=1, padx=6)
+    tk.Button(ventana, text="Eliminar venta (BD)", command=eliminar_venta_bd, bg="#ffd6d6").grid(row=4, column=2, padx=6)
+    tk.Button(ventana, text="Cargar ventas", command=cargar_datos, bg="#e7e7ff").grid(row=4, column=3, padx=6)
 
-        sql = "DELETE FROM ventas WHERE id=?"
-        self.db.execute(sql, (venta_id,), commit=True)
-        self.cargar_datos()
-        print("Venta eliminada correctamente.")
-
-    def _seleccionar_fila(self, event):
-        seleccion = self.tabla.selection()
-        if not seleccion:
-            return
-        valores = self.tabla.item(seleccion[0])["values"]
-        keys = list(self.entries.keys())
-        for i, key in enumerate(keys):
-            self.entries[key].delete(0, tk.END)
-            self.entries[key].insert(0, valores[i + 1])
-        print("Venta seleccionada para revisión.")
-
-    def _limpiar_campos(self):
-        for entry in self.entries.values():
-            entry.delete(0, tk.END)
+    cargar_datos()
+    print("Commit: Ventana de Ventas inicializada con cola FIFO.")
