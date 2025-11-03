@@ -1,72 +1,176 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from core.database import DatabaseManager
+import sqlite3
 
-COLOR_FONDO_VENTANA = "#FFF9E6"
-COLOR_FONDO_FRAME = "#FFF3C4"
-COLOR_BOTON = "#E6B325"
-COLOR_TEXTO_OSCURO = "#333333"
+DB_PATH = "espacio_creativo.db"
 
-class ReportesView(tk.Toplevel):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.title("Reportes - Espacio Creativo")
-        self.geometry("700x420")
-        self.config(bg=COLOR_FONDO_VENTANA)
+def conectar():
+    return sqlite3.connect(DB_PATH)
 
-        self.db = DatabaseManager()
 
-        self._crear_interfaz()
-        print("Ventana de Reportes inicializada.")
+def bubble_sort(arr, key=lambda x: x):
+    a = arr[:]
+    n = len(a)
+    for i in range(n):
+        for j in range(0, n-i-1):
+            if key(a[j]) > key(a[j+1]):
+                a[j], a[j+1] = a[j+1], a[j]
+    print("Commit: Ordenamiento Bubble Sort ejecutado.")
+    return a
 
-    def _crear_interfaz(self):
-        frame = tk.Frame(self, bg=COLOR_FONDO_FRAME, padx=15, pady=15)
-        frame.pack(fill="both", expand=True, padx=10, pady=10)
+def shell_sort(arr, key=lambda x: x):
+    a = arr[:]
+    n = len(a)
+    gap = n // 2
+    while gap > 0:
+        for i in range(gap, n):
+            temp = a[i]
+            j = i
+            while j >= gap and key(a[j-gap]) > key(temp):
+                a[j] = a[j-gap]
+                j -= gap
+            a[j] = temp
+        gap //= 2
+    print("Commit: Ordenamiento Shell Sort ejecutado.")
+    return a
 
-        tk.Label(frame, text="Reportes de Ventas y Servicios",
-                 font=("Arial", 16, "bold"),
-                 bg=COLOR_FONDO_FRAME,
-                 fg=COLOR_TEXTO_OSCURO).pack(pady=(0, 10))
+def quick_sort(arr, key=lambda x: x):
+    if len(arr) <= 1:
+        return arr[:]
+    pivot = arr[len(arr)//2]
+    left = [x for x in arr if key(x) < key(pivot)]
+    middle = [x for x in arr if key(x) == key(pivot)]
+    right = [x for x in arr if key(x) > key(pivot)]
+    sorted_arr = quick_sort(left, key) + middle + quick_sort(right, key)
+    return sorted_arr
 
-        columnas = ("servicio", "ventas", "ingresos")
-        self.tabla = ttk.Treeview(frame, columns=columnas, show="headings", height=12)
-        for col in columnas:
-            self.tabla.heading(col, text=col.capitalize())
-            self.tabla.column(col, width=180 if col == "servicio" else 120)
-        self.tabla.pack(fill="both", expand=True, pady=10)
+def binary_search(sorted_list, target, key=lambda x: x):
+    lo, hi = 0, len(sorted_list)-1
+    while lo <= hi:
+        mid = (lo+hi)//2
+        if key(sorted_list[mid]) == target:
+            print("Commit: Búsqueda binaria encontró el objetivo.")
+            return mid
+        elif key(sorted_list[mid]) < target:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    print("Commit: Búsqueda binaria no encontró el objetivo.")
+    return -1
 
-        tk.Button(frame, text="Generar reporte",
-                  command=self.generar_reporte,
-                  bg=COLOR_BOTON,
-                  fg=COLOR_TEXTO_OSCURO,
-                  font=("Arial", 12, "bold"),
-                  relief="flat",
-                  padx=30,
-                  pady=6).pack(pady=10)
+def sequential_search(lst, target, key=lambda x: x):
+    for i, item in enumerate(lst):
+        if key(item) == target:
+            print("Commit: Búsqueda secuencial encontró el objetivo.")
+            return i
+    print("Commit: Búsqueda secuencial no encontró el objetivo.")
+    return -1
 
-    def generar_reporte(self):
+import random
+def bogo_sort(arr, key=lambda x: x, limit=5000):
+    a = arr[:]
+    attempts = 0
+    def ordered(a):
+        return all(key(a[i]) <= key(a[i+1]) for i in range(len(a)-1))
+    while not ordered(a) and attempts < limit:
+        random.shuffle(a)
+        attempts += 1
+    print(f"Commit: Bogo sort ejecutado (intentos={attempts}).")
+    return a
+
+
+def ventana_reportes():
+    ventana = tk.Toplevel()
+    ventana.title("Reportes - Espacio Creativo")
+    ventana.geometry("760x480")
+    ventana.config(bg="#ffffff")
+
+
+    cols = ("id","nombre","descripcion","precio")
+    tabla = ttk.Treeview(ventana, columns=cols, show="headings", height=12)
+    for c in cols: tabla.heading(c, text=c.capitalize())
+    tabla.grid(row=3, column=0, columnspan=6, padx=10, pady=10)
+
+    def cargar_servicios():
+        tabla.delete(*tabla.get_children())
+        conn = conectar(); cur = conn.cursor()
+        cur.execute("SELECT id, nombre, descripcion, precio FROM servicios")
+        rows = cur.fetchall()
+        for r in rows: tabla.insert("", tk.END, values=r)
+        conn.close()
+        print("Commit: Servicios cargados para reportes.")
+        return rows
+
+    def ordenar_y_mostrar(alg):
+        rows = cargar_servicios()
+        if not rows:
+            messagebox.showinfo("Info", "No hay servicios para ordenar.")
+            return
+        if alg == "bubble":
+            sorted_rows = bubble_sort(rows, key=lambda x: x[3])
+        elif alg == "shell":
+            sorted_rows = shell_sort(rows, key=lambda x: x[3])
+        elif alg == "quick":
+            sorted_rows = quick_sort(rows, key=lambda x: x[3])
+            print("Commit: Ordenamiento Quick Sort (recursivo) ejecutado.")
+        elif alg == "bogo":
+            sorted_rows = bogo_sort(rows, key=lambda x: x[3], limit=2000)
+        else:
+            return
+        tabla.delete(*tabla.get_children())
+        for r in sorted_rows: tabla.insert("", tk.END, values=r)
+        messagebox.showinfo("Ordenamiento", f"Ordenamiento {alg} aplicado.")
+
+    def buscar_por_precio_binario():
+        target_txt = entry_target.get().strip()
+        if not target_txt:
+            messagebox.showwarning("Entrada", "Ingresa precio a buscar.")
+            return
         try:
-            self.tabla.delete(*self.tabla.get_children())
-            sql = """
-                SELECT s.nombre AS servicio, 
-                       COUNT(v.id) AS ventas, 
-                       IFNULL(SUM(v.total), 0) AS ingresos
-                FROM servicios s
-                         LEFT JOIN ventas v ON s.id = v.servicio_id
-                GROUP BY s.id
-                ORDER BY ingresos DESC;
-            """
-            cur = self.db.execute(sql)
-            resultados = cur.fetchall()
+            target = float(target_txt)
+        except:
+            messagebox.showerror("Error", "Precio inválido.")
+            return
+        rows = cargar_servicios()
+        sorted_rows = quick_sort(rows, key=lambda x: x[3])
+        idx = binary_search(sorted_rows, target, key=lambda x: x[3])
+        if idx >= 0:
+            messagebox.showinfo("Encontrado", f"Encontrado: {sorted_rows[idx]}")
+        else:
+            messagebox.showinfo("No encontrado", "No existe servicio con ese precio.")
 
-            if not resultados:
-                messagebox.showinfo("Reporte vacío", "No se encontraron datos de ventas.")
-                return
+    def hashing_demo():
+        rows = cargar_servicios()
+        hash_table = {}
+        for r in rows:
+            hash_table[r[1]] = r
+        messagebox.showinfo("Hashing", f"Hash built: {len(hash_table)} elementos (lookup O(1) promedio)")
+        print("Commit: Tabla hash de servicios construida.")
 
-            for fila in resultados:
-                self.tabla.insert("", tk.END, values=fila)
+    tk.Button(ventana, text="Cargar servicios", command=cargar_servicios, bg="#dbeafe").grid(row=0, column=0, padx=6, pady=6)
+    tk.Button(ventana, text="Ordenar (Bubble)", command=lambda: ordenar_y_mostrar("bubble"), bg="#ffe0b2").grid(row=0, column=1)
+    tk.Button(ventana, text="Ordenar (Shell)", command=lambda: ordenar_y_mostrar("shell"), bg="#c8e6c9").grid(row=0, column=2)
+    tk.Button(ventana, text="Ordenar (Quick)", command=lambda: ordenar_y_mostrar("quick"), bg="#f0f4c3").grid(row=0, column=3)
+    tk.Button(ventana, text="Ordenar (Bogo demo)", command=lambda: ordenar_y_mostrar("bogo"), bg="#ffcdd2").grid(row=0, column=4)
+    tk.Button(ventana, text="Hashing demo", command=hashing_demo, bg="#e1bee7").grid(row=0, column=5)
 
-            print("Reporte generado correctamente.")
-        except Exception as e:
-            messagebox.showerror("Error", f"No se pudo generar el reporte.\n{e}")
-            print("Error en generar_reporte:", e)
+
+    tk.Label(ventana, text="Buscar por precio (binaria):").grid(row=1, column=0, padx=6, pady=6, sticky="e")
+    entry_target = tk.Entry(ventana, width=15); entry_target.grid(row=1, column=1)
+    tk.Button(ventana, text="Buscar (binaria)", command=buscar_por_precio_binario, bg="#bbdefb").grid(row=1, column=2)
+
+
+    def buscar_secuencial_nombre():
+        key = entry_nombre.get().strip().lower()
+        rows = cargar_servicios()
+        idx = sequential_search(rows, key, key=lambda x: x[1].lower())
+        if idx >= 0:
+            messagebox.showinfo("Encontrado", f"Encontrado: {rows[idx]}")
+        else:
+            messagebox.showinfo("No encontrado", "No existe servicio con ese nombre.")
+
+    tk.Label(ventana, text="Buscar por nombre (secuencial):").grid(row=2, column=0, sticky="e")
+    entry_nombre = tk.Entry(ventana, width=20); entry_nombre.grid(row=2, column=1)
+    tk.Button(ventana, text="Buscar (secuencial)", command=buscar_secuencial_nombre, bg="#c8e6c9").grid(row=2, column=2)
+
+    print("Commit: Ventana de Reportes inicializada con algoritmos.")
