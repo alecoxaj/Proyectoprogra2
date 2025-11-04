@@ -92,6 +92,7 @@ def ventana_usuarios():
         conn = conectar(); cur = conn.cursor()
         cur.execute("DELETE FROM usuarios WHERE id=?", (user_id,))
         conn.commit(); conn.close()
+        messagebox.showinfo("Eliminación del Cliente", "Cliente eliminado")
         print(f"Commit: Usuario id={user_id} eliminado.")
         cargar_datos()
 
@@ -107,6 +108,7 @@ def ventana_usuarios():
         cur.execute("UPDATE usuarios SET nombre=?, usuario=?, contraseña=?, rol=? WHERE id=?",
                     (n, u, p, r, uid))
         conn.commit(); conn.close()
+        messagebox.showinfo("Actualización del Cliente", "Cliente actualizado")
         print(f"Commit: Usuario id={uid} actualizado.")
         cargar_datos()
 
