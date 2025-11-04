@@ -7,6 +7,15 @@ DB_PATH = "espacio_creativo.db"
 def conectar():
     return sqlite3.connect(DB_PATH)
 
+def quick_sort_clientes(lista):
+    if len(lista) <= 1:
+        return lista
+    pivote = lista[len(lista) // 2][1].lower()
+    menores = [x for x in lista if x[1].lower() < pivote]
+    iguales = [x for x in lista if x[1].lower() == pivote]
+    mayores = [x for x in lista if x[1].lower() > pivote]
+    return quick_sort_clientes(menores) + iguales + quick_sort_clientes(mayores)
+
 def ventana_clientes():
     ventana = tk.Toplevel()
     ventana.title("Gestión de Clientes - Espacio Creativo")
@@ -47,7 +56,13 @@ def ventana_clientes():
             clientes_cache.append(fila)
             tabla.insert("", tk.END, values=fila)
         conn.close()
-        print("Commit: Clientes cargados en tabla y cache.")
+
+        clientes_ordenados = quick_sort_clientes(clientes_cache)
+        for fila in clientes_ordenados:
+            tabla.insert("", tk.END, values=fila)
+
+        print("Commit: Clientes cargados en tabla y ordenados por nombre (Quick Sort).")
+
 
     def agregar_cliente():
         n, t, c, d = entry_nombre.get(), entry_telefono.get(), entry_correo.get(), entry_direccion.get()
@@ -112,11 +127,10 @@ def ventana_clientes():
 
     tabla.bind("<<TreeviewSelect>>", seleccionar)
 
-    # Botones
     tk.Button(ventana, text="Agregar", command=agregar_cliente, bg="#b8f2e6").grid(row=4, column=0, padx=6)
     tk.Button(ventana, text="Actualizar", command=actualizar_cliente, bg="#fff3b0").grid(row=4, column=1, padx=6)
     tk.Button(ventana, text="Eliminar", command=eliminar_cliente, bg="#ffd6d6").grid(row=4, column=2, padx=6)
     tk.Button(ventana, text="Buscar", command=buscar_cliente, bg="#dcedc1").grid(row=4, column=3, padx=6)
 
     cargar_datos()
-    print("Commit: Ventana de Clientes inicializada.")
+    print("Commit: Ventana de Clientes inicializada con Quick Sort.")
