@@ -63,7 +63,7 @@ def ventana_reportes():
         print("Commit: Servicios cargados para reportes.")
         return rows
 
-    def ordenar_y_mostrar(alg):
+    def ordenar_y_mostrar(alg="Quick Sort"):
         rows = cargar_servicios()
         if not rows:
             messagebox.showinfo("Info", "No hay servicios para ordenar.")
