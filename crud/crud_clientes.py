@@ -48,11 +48,11 @@ def ventana_clientes():
         conn = conectar()
         cur = conn.cursor()
         cur.execute("SELECT * FROM clientes")
-        clientes_cache.clear()
-        for fila in cur.fetchall():
-            clientes_cache.append(fila)
-            tabla.insert("", tk.END, values=fila)
+        filas = cur.fetchall()
         conn.close()
+
+        clientes_cache.clear()
+        clientes_cache.extend(filas)
 
         clientes_ordenados = quick_sort_clientes(clientes_cache)
         for fila in clientes_ordenados:
@@ -103,19 +103,34 @@ def ventana_clientes():
         print(f"Commit: Cliente id={cid} actualizado.")
         cargar_datos()
 
+    entry_buscar = tk.Entry(ventana, width=20)
+    entry_buscar.grid(row=4, column=3, padx=(6, 0), sticky="e")
+
     def buscar_cliente():
-        key = entry_nombre.get().strip().lower()
-        for c in clientes_cache:
-            if key in c[1].lower():
-                messagebox.showinfo("Resultado", f"Cliente encontrado:\n{c}")
-                print(f"Commit: Cliente '{c[1]}' encontrado (búsqueda secuencial).")
-                return
-        messagebox.showinfo("No encontrado", "No se encontró el cliente.")
-        print("Commit: búsqueda secuencial no encontró resultado.")
+        key = entry_buscar.get().strip().lower()
+        if not key:
+            messagebox.showwarning("Advertencia", "Ingresa un nombre para buscar.")
+            return
+
+        encontrado = False
+        for child in tabla.get_children():
+            valores = tabla.item(child, "values")
+            if key in valores[1].lower():
+                tabla.selection_set(child)
+                tabla.focus(child)
+                tabla.see(child)
+                encontrado = True
+                print(f"Commit: Cliente '{valores[1]}' encontrado (búsqueda secuencial).")
+                break
+
+        if not encontrado:
+            messagebox.showinfo("No encontrado", "No se encontró el cliente.")
+            print("Commit: búsqueda secuencial no encontró resultado.")
 
     def seleccionar(event):
         sel = tabla.selection()
-        if not sel: return
+        if not sel:
+            return
         r = tabla.item(sel)["values"]
         entry_nombre.delete(0, tk.END); entry_nombre.insert(0, r[1])
         entry_telefono.delete(0, tk.END); entry_telefono.insert(0, r[2])
@@ -126,7 +141,7 @@ def ventana_clientes():
     tk.Button(ventana, text="Agregar", command=agregar_cliente, bg="#b8f2e6").grid(row=4, column=0, padx=6)
     tk.Button(ventana, text="Actualizar", command=actualizar_cliente, bg="#fff3b0").grid(row=4, column=1, padx=6)
     tk.Button(ventana, text="Eliminar", command=eliminar_cliente, bg="#ffd6d6").grid(row=4, column=2, padx=6)
-    tk.Button(ventana, text="Buscar", command=buscar_cliente, bg="#dcedc1").grid(row=4, column=3, padx=6)
+    tk.Button(ventana, text="Buscar (Secuencial)", command=buscar_cliente, bg="#dcedc1").grid(row=4, column=4, padx=6)
 
     cargar_datos()
     print("Commit: Ventana de Clientes inicializada con Quick Sort.")
