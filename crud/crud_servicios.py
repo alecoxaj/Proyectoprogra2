@@ -116,6 +116,7 @@ def ventana_servicios():
             messagebox.showwarning("Búsqueda", "Por favor ingresa un nombre para buscar.")
             return
 
+
         for s in servicios_cache:
             if key in s[1].lower():
                 print(f"Commit: Servicio '{s[1]}' encontrado (búsqueda secuencial).")
