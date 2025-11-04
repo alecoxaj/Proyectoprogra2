@@ -48,12 +48,12 @@ def ventana_servicios():
 
     def cargar_datos():
         tabla.delete(*tabla.get_children())
-        conn = conectar(); cur = conn.cursor()
+        conn = conectar()
+        cur = conn.cursor()
         cur.execute("SELECT * FROM servicios")
         servicios_cache.clear()
         for fila in cur.fetchall():
             servicios_cache.append(fila)
-            tabla.insert("", tk.END, values=fila)
         conn.close()
 
         servicios_ordenados = shell_sort_servicios(servicios_cache, key=lambda x: x[3])
@@ -88,6 +88,7 @@ def ventana_servicios():
         conn = conectar(); cur = conn.cursor()
         cur.execute("DELETE FROM servicios WHERE id=?", (sid,))
         conn.commit(); conn.close()
+        messagebox.showinfo("Eliminación de servicio", "Servicio eliminado")
         print(f"Commit: Servicio id={sid} eliminado.")
         cargar_datos()
 
