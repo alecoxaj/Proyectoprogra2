@@ -7,6 +7,14 @@ DB_PATH = "espacio_creativo.db"
 def conectar():
     return sqlite3.connect(DB_PATH)
 
+def bubble_sort_usuarios(lista):
+    n = len(lista)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if lista[j][1].lower() > lista[j + 1][1].lower():
+                lista[j], lista[j + 1] = lista[j + 1], lista[j]
+    return lista
+
 def ventana_usuarios():
     ventana = tk.Toplevel()
     ventana.title("Gestión de Usuarios - Espacio Creativo")
@@ -41,12 +49,15 @@ def ventana_usuarios():
         conn = conectar(); cur = conn.cursor()
         cur.execute("SELECT id, nombre, usuario, rol FROM usuarios")
         filas = cur.fetchall()
-        for f in filas:
+        conn.close()
+
+        filas_ordenadas = bubble_sort_usuarios(filas)
+
+        for f in filas_ordenadas:
             tabla.insert("", tk.END, values=f)
             usuarios_cache.append(f)
             usuarios_hash[f[2]] = f
-        conn.close()
-        print("Commit: Usuarios cargados en tabla, cache y hash.")
+        print("Commit: Usuarios cargados en tabla, ordenados por Bubble Sort y almacenados en cache/hash.")
 
     def agregar_usuario():
         n = entry_nombre.get().strip()
@@ -57,7 +68,8 @@ def ventana_usuarios():
             messagebox.showwarning("Datos", "Llena nombre, usuario y contraseña.")
             print("Commit: Intento de agregar usuario sin datos completos.")
             return
-        conn = conectar(); cur = conn.cursor()
+        conn = conectar();
+        cur = conn.cursor()
         try:
             cur.execute("INSERT INTO usuarios (nombre, usuario, contraseña, rol) VALUES (?,?,?,?)",
                         (n, u, p, r))
@@ -122,9 +134,12 @@ def ventana_usuarios():
         sel = tabla.selection()
         if not sel: return
         r = tabla.item(sel)["values"]
-        entry_nombre.delete(0, tk.END); entry_nombre.insert(0, r[1])
-        entry_usuario.delete(0, tk.END); entry_usuario.insert(0, r[2])
-        entry_rol.delete(0, tk.END); entry_rol.insert(0, r[3])
+        entry_nombre.delete(0, tk.END)
+        entry_nombre.insert(0, r[1])
+        entry_usuario.delete(0, tk.END)
+        entry_usuario.insert(0, r[2])
+        entry_rol.delete(0, tk.END)
+        entry_rol.insert(0, r[3])
 
     tabla.bind("<<TreeviewSelect>>", seleccionar)
 
