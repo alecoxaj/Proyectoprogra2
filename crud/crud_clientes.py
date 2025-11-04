@@ -34,11 +34,8 @@ def ventana_clientes():
     entry_correo = tk.Entry(ventana, width=30)
     entry_correo.grid(row=2, column=1)
 
-    tk.Label(ventana, text="Dirección:").grid(row=3, column=0, padx=6, pady=6, sticky="e")
-    entry_direccion = tk.Entry(ventana, width=30)
-    entry_direccion.grid(row=3, column=1)
 
-    cols = ("id", "nombre", "telefono", "correo", "direccion")
+    cols = ("id", "nombre", "telefono", "correo")
     tabla = ttk.Treeview(ventana, columns=cols, show="headings", height=12)
     for c in cols:
         tabla.heading(c, text=c.capitalize())
@@ -65,13 +62,13 @@ def ventana_clientes():
 
 
     def agregar_cliente():
-        n, t, c, d = entry_nombre.get(), entry_telefono.get(), entry_correo.get(), entry_direccion.get()
+        n, t, c = entry_nombre.get(), entry_telefono.get(), entry_correo.get()
         if not n:
             messagebox.showwarning("Advertencia", "El nombre es obligatorio.")
             return
         conn = conectar()
         cur = conn.cursor()
-        cur.execute("INSERT INTO clientes (nombre, telefono, correo, direccion) VALUES (?,?,?,?)", (n, t, c, d))
+        cur.execute("INSERT INTO clientes (nombre, telefono, correo) VALUES (?,?,?)", (n, t, c))
         conn.commit()
         conn.close()
         print(f"Commit: Cliente '{n}' agregado.")
@@ -97,10 +94,10 @@ def ventana_clientes():
             messagebox.showwarning("Selecciona", "Selecciona un cliente.")
             return
         cid = tabla.item(sel)["values"][0]
-        n, t, c, d = entry_nombre.get(), entry_telefono.get(), entry_correo.get(), entry_direccion.get()
+        n, t, c = entry_nombre.get(), entry_telefono.get(), entry_correo.get()
         conn = conectar()
         cur = conn.cursor()
-        cur.execute("UPDATE clientes SET nombre=?, telefono=?, correo=?, direccion=? WHERE id=?", (n, t, c, d, cid))
+        cur.execute("UPDATE clientes SET nombre=?, telefono=?, correo=? WHERE id=?", (n, t, c, cid))
         conn.commit()
         conn.close()
         print(f"Commit: Cliente id={cid} actualizado.")
@@ -123,7 +120,6 @@ def ventana_clientes():
         entry_nombre.delete(0, tk.END); entry_nombre.insert(0, r[1])
         entry_telefono.delete(0, tk.END); entry_telefono.insert(0, r[2])
         entry_correo.delete(0, tk.END); entry_correo.insert(0, r[3])
-        entry_direccion.delete(0, tk.END); entry_direccion.insert(0, r[4])
 
     tabla.bind("<<TreeviewSelect>>", seleccionar)
 
