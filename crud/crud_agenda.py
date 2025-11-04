@@ -11,6 +11,15 @@ COLOR_BOTON_AGREGAR = "#A7C7E7"
 COLOR_BOTON_ACTUALIZAR = "#E6B325"
 COLOR_BOTON_ELIMINAR = "#F8D7DA"
 
+def selection_sort_agenda(lista):
+    n = len(lista)
+    for i in range(n):
+        min_idx = i
+        for j in range(i + 1, n):
+            if lista[j][3] < lista[min_idx][3]:  # columna 3 = fecha
+                min_idx = j
+        lista[i], lista[min_idx] = lista[min_idx], lista[i]
+    return lista
 
 def ventana_agenda():
     ventana = tk.Toplevel()
@@ -40,7 +49,7 @@ def ventana_agenda():
     entry_estado = tk.Entry(frame_form, width=20)
     entry_estado.grid(row=3, column=1, pady=5, padx=5)
 
-
+    registros_cache = []
 
     def cargar_agenda():
         for fila in tabla.get_children():
@@ -52,8 +61,13 @@ def ventana_agenda():
         registros = cursor.fetchall()
         conexion.close()
 
-        for r in registros:
+        registros_ordenados = selection_sort_agenda(registros)
+        registros_cache.clear()
+        registros_cache.extend(registros_ordenados)
+
+        for r in registros_ordenados:
             tabla.insert("", "end", values=r)
+        print("Commit: Agenda cargada y ordenada por fecha (Selection Sort).")
 
     def agregar():
         cliente_id = entry_cliente.get()
@@ -140,7 +154,7 @@ def ventana_agenda():
 
     cargar_agenda()
 
-    print("Commit: Ventana Agenda abierta con selector de calendario.")
+    print("Commit: Ventana Agenda abierta con selector de calendario y ordenamiento Selection Sort.")
 
 
 class AgendaView:
