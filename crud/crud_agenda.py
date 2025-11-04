@@ -90,7 +90,7 @@ def ventana_agenda():
         conexion.close()
         cargar_agenda()
         print(f"Commit: Agenda agregada para cliente {cliente_id} en fecha {fecha}.")
-        messagebox.showinfo("Éxito", "Registro agregado correctamente.")
+        messagebox.showinfo("Éxito", "Registro agregado correctamente")
 
     def actualizar():
         seleccionado = tabla.selection()
