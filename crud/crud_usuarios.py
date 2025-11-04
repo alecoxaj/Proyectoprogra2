@@ -112,21 +112,46 @@ def ventana_usuarios():
         print(f"Commit: Usuario id={uid} actualizado.")
         cargar_datos()
 
-    def busqueda_secuencial():
-        key = entry_nombre.get().strip().lower()
-        for u in usuarios_cache:
-            if u[1].lower() == key:
-                messagebox.showinfo("Encontrado", f"Usuario: {u}")
+    entry_buscar_nombre = tk.Entry(ventana, width=20)
+    entry_buscar_nombre.grid(row=2, column=3, padx=(5, 0))
+    tk.Button(ventana, text="Buscar (secuencial por nombre)",
+              command=lambda: busqueda_secuencial(entry_buscar_nombre.get())).grid(row=2, column=2, padx=6, sticky="e")
+
+    entry_buscar_usuario = tk.Entry(ventana, width=20)
+    entry_buscar_usuario.grid(row=3, column=3, padx=(5, 0))
+    tk.Button(ventana, text="Buscar (hash por usuario)",
+              command=lambda: buscar_por_hash(entry_buscar_usuario.get())).grid(row=3, column=2, padx=6, sticky="e")
+
+    def busqueda_secuencial(nombre):
+        key = nombre.strip().lower()
+        for item in tabla.get_children():
+            tabla.selection_remove(item)
+
+        for item in tabla.get_children():
+            valores = tabla.item(item, "values")
+            if valores and valores[1].lower() == key:
+                tabla.selection_set(item)
+                tabla.focus(item)
+                tabla.see(item)
                 print(f"Commit: búsqueda secuencial encontró {key}.")
                 return
         messagebox.showinfo("No encontrado", "No se encontró el usuario.")
         print(f"Commit: búsqueda secuencial no encontró {key}.")
 
-    def buscar_por_hash():
-        key = entry_usuario.get().strip()
+    def buscar_por_hash(usuario):
+        key = usuario.strip()
         res = usuarios_hash.get(key)
+        for item in tabla.get_children():
+            tabla.selection_remove(item)
+
         if res:
-            messagebox.showinfo("Encontrado (hash)", f"Usuario: {res}")
+            for item in tabla.get_children():
+                valores = tabla.item(item, "values")
+                if valores and valores[2] == key:
+                    tabla.selection_set(item)
+                    tabla.focus(item)
+                    tabla.see(item)
+                    break
             print(f"Commit: búsqueda por hash encontró {key}.")
         else:
             messagebox.showinfo("No encontrado", "No se encontró el usuario (hash).")
@@ -150,8 +175,6 @@ def ventana_usuarios():
     tk.Button(ventana, text="Eliminar", command=eliminar_usuario, bg="#ffd6d6").grid(row=4, column=2, padx=6, pady=6)
     tk.Button(ventana, text="Cargar", command=cargar_datos, bg="#dbeafe").grid(row=4, column=3, padx=6, pady=6)
 
-    tk.Button(ventana, text="Buscar (secuencial por nombre)", command=busqueda_secuencial).grid(row=2, column=2, padx=6)
-    tk.Button(ventana, text="Buscar (hash por usuario)", command=buscar_por_hash).grid(row=3, column=2, padx=6)
 
     cargar_datos()
     print("Commit: Ventana de gestión de usuarios inicializada.")
