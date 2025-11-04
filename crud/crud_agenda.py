@@ -140,7 +140,7 @@ def ventana_agenda():
 
     cargar_agenda()
 
-    print("Commit: Ventana Agenda abierta con selector de calendario (sin campo de hora).")
+    print("Commit: Ventana Agenda abierta con selector de calendario.")
 
 
 class AgendaView:
