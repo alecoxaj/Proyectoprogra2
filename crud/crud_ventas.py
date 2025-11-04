@@ -11,6 +11,16 @@ def conectar():
 
 ventas_queue = deque()
 
+def bubble_sort_ventas(lista, key=lambda x: x):
+    a = lista[:]
+    n = len(a)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if key(a[j]) > key(a[j + 1]):
+                a[j], a[j + 1] = a[j + 1], a[j]
+    print("Commit: Ordenamiento Bubble Sort ejecutado en ventas.")
+    return a
+
 def ventana_ventas():
     ventana = tk.Toplevel()
     ventana.title("Ventas - Espacio Creativo")
@@ -29,17 +39,24 @@ def ventana_ventas():
     for c in cols: tabla.heading(c, text=c.capitalize())
     tabla.grid(row=6, column=0, columnspan=6, padx=10, pady=10)
 
-    def cargar_datos():
+    def cargar_datos(ordenar=False):
         tabla.delete(*tabla.get_children())
         conn = conectar(); cur = conn.cursor()
         cur.execute("SELECT * FROM ventas")
-        for f in cur.fetchall(): tabla.insert("", tk.END, values=f)
+        ventas = cur.fetchall()
         conn.close()
-        print("Commit: Ventas cargadas desde BD.")
+
+        if ordenar:
+            ventas = bubble_sort_ventas(ventas, key=lambda x: x[4])
+
+        for f in ventas:
+            tabla.insert("", tk.END, values=f)
+        print("Commit: Ventas cargadas (ordenadas por total)." if ordenar else "Commit: Ventas cargadas desde BD.")
 
     def encolar_venta():
         try:
-            cid = int(entry_cliente.get().strip()); sid = int(entry_servicio.get().strip())
+            cid = int(entry_cliente.get().strip())
+            sid = int(entry_servicio.get().strip())
             total = float(entry_total.get().strip())
         except:
             messagebox.showerror("Error", "Datos inválidos.")
@@ -76,9 +93,10 @@ def ventana_ventas():
         cargar_datos()
 
     tk.Button(ventana, text="Encolar venta", command=encolar_venta, bg="#bce0ff").grid(row=4, column=0, padx=6)
-    tk.Button(ventana, text="Procesar siguiente venta", command=procesar_venta, bg="#d1f7c4").grid(row=4, column=1, padx=6)
-    tk.Button(ventana, text="Eliminar venta (BD)", command=eliminar_venta_bd, bg="#ffd6d6").grid(row=4, column=2, padx=6)
-    tk.Button(ventana, text="Cargar ventas", command=cargar_datos, bg="#e7e7ff").grid(row=4, column=3, padx=6)
-
+    tk.Button(ventana, text="Procesar siguiente venta", command=procesar_venta, bg="#d1f7c4").grid(row=4, column=1,                                                                              padx=6)
+    tk.Button(ventana, text="Eliminar venta (BD)", command=eliminar_venta_bd, bg="#ffd6d6").grid(row=4, column=2,                                                                                          padx=6)
+    tk.Button(ventana, text="Cargar ventas", command=lambda: cargar_datos(False), bg="#e7e7ff").grid(row=4, column=3,                                                                                                padx=6)
+    tk.Button(ventana, text="Ordenar por total", command=lambda: cargar_datos(True), bg="#fff3b0").grid(row=4, column=4,
+                                                                                                        padx=6)
     cargar_datos()
-    print("Commit: Ventana de Ventas inicializada con cola FIFO.")
+    print("Commit: Ventana de Ventas inicializada con cola FIFO y ordenamiento Bubble Sort.")
