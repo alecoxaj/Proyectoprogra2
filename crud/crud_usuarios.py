@@ -108,7 +108,7 @@ def ventana_usuarios():
         cur.execute("UPDATE usuarios SET nombre=?, usuario=?, contraseña=?, rol=? WHERE id=?",
                     (n, u, p, r, uid))
         conn.commit(); conn.close()
-        messagebox.showinfo("Actualización del Cliente", "Cliente actualizado")
+        messagebox.showinfo("Actualización del Cliente", "Usuario actualizado")
         print(f"Commit: Usuario id={uid} actualizado.")
         cargar_datos()
 
