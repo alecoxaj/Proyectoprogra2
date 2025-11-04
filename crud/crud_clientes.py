@@ -135,7 +135,6 @@ def ventana_clientes():
         entry_nombre.delete(0, tk.END); entry_nombre.insert(0, r[1])
         entry_telefono.delete(0, tk.END); entry_telefono.insert(0, r[2])
         entry_correo.delete(0, tk.END); entry_correo.insert(0, r[3])
-
     tabla.bind("<<TreeviewSelect>>", seleccionar)
 
     tk.Button(ventana, text="Agregar", command=agregar_cliente, bg="#b8f2e6").grid(row=4, column=0, padx=6)
