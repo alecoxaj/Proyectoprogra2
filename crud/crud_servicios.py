@@ -110,13 +110,23 @@ def ventana_servicios():
         print(f"Commit: Servicio id={sid} actualizado.")
         cargar_datos()
 
-    def buscar_servicio():
-        key = entry_nombre.get().strip().lower()
+    def buscar_servicio(termino):
+        key = termino.strip().lower()
+        if not key:
+            messagebox.showwarning("Búsqueda", "Por favor ingresa un nombre para buscar.")
+            return
+
         for s in servicios_cache:
             if key in s[1].lower():
-                messagebox.showinfo("Resultado", f"Servicio encontrado:\n{s}")
                 print(f"Commit: Servicio '{s[1]}' encontrado (búsqueda secuencial).")
+
+                for item in tabla.get_children():
+                    if tabla.item(item)["values"][0] == s[0]:
+                        tabla.selection_set(item)
+                        tabla.see(item)
+                        break
                 return
+
         messagebox.showinfo("No encontrado", "No se encontró el servicio.")
         print("Commit: búsqueda secuencial no encontró resultado.")
 
@@ -124,9 +134,12 @@ def ventana_servicios():
         sel = tabla.selection()
         if not sel: return
         r = tabla.item(sel)["values"]
-        entry_nombre.delete(0, tk.END); entry_nombre.insert(0, r[1])
-        entry_desc.delete(0, tk.END); entry_desc.insert(0, r[2])
-        entry_precio.delete(0, tk.END); entry_precio.insert(0, r[3])
+        entry_nombre.delete(0, tk.END)
+        entry_nombre.insert(0, r[1])
+        entry_desc.delete(0, tk.END)
+        entry_desc.insert(0, r[2])
+        entry_precio.delete(0, tk.END)
+        entry_precio.insert(0, r[3])
 
     tabla.bind("<<TreeviewSelect>>", seleccionar)
 
@@ -134,7 +147,10 @@ def ventana_servicios():
     tk.Button(ventana, text="Agregar", command=agregar_servicio, bg="#b8f2e6").grid(row=4, column=0, padx=6)
     tk.Button(ventana, text="Actualizar", command=actualizar_servicio, bg="#fff3b0").grid(row=4, column=1, padx=6)
     tk.Button(ventana, text="Eliminar", command=eliminar_servicio, bg="#ffd6d6").grid(row=4, column=2, padx=6)
-    tk.Button(ventana, text="Buscar", command=buscar_servicio, bg="#dcedc1").grid(row=4, column=3, padx=6)
+
+    entry_buscar = tk.Entry(ventana, width=20)
+    entry_buscar.grid(row=4, column=3, padx=6, sticky="e")
+    tk.Button(ventana, text="Buscar (Secuencial)", command=lambda: buscar_servicio(entry_buscar.get()), bg="#dcedc1").grid(row=4, column=4, padx=6, sticky="w")
 
     cargar_datos()
     print("Commit: Ventana de Servicios inicializada con Shell Sort.")
