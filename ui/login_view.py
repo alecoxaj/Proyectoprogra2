@@ -3,7 +3,6 @@ from tkinter import messagebox
 from PIL import Image, ImageTk
 import sqlite3
 
-
 class LoginView:
     DB_PATH = "espacio_creativo.db"
 
@@ -56,10 +55,6 @@ class LoginView:
                                  relief="flat", padx=30, pady=8,
                                  cursor="hand2")
         btn_ingresar.pack(pady=15)
-
-        tk.Label(login_frame, text="Usuario: admin | Contraseña: 1234",
-                 font=("Arial", 9), bg=self.COLOR_FONDO_FRAME,
-                 fg=self.COLOR_TEXTO_OSCURO).pack(pady=(10, 0))
 
     def verificar_login(self, usuario, contraseña):
         try:
