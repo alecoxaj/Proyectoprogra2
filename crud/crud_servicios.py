@@ -7,6 +7,22 @@ DB_PATH = "espacio_creativo.db"
 def conectar():
     return sqlite3.connect(DB_PATH)
 
+def shell_sort_servicios(lista, key=lambda x: x):
+    a = lista[:]
+    n = len(a)
+    gap = n // 2
+    while gap > 0:
+        for i in range(gap, n):
+            temp = a[i]
+            j = i
+            while j >= gap and key(a[j - gap]) > key(temp):
+                a[j] = a[j - gap]
+                j -= gap
+            a[j] = temp
+        gap //= 2
+    print("Commit: Ordenamiento Shell Sort ejecutado.")
+    return a
+
 def ventana_servicios():
     ventana = tk.Toplevel()
     ventana.title("Gestión de Servicios - Espacio Creativo")
@@ -39,7 +55,13 @@ def ventana_servicios():
             servicios_cache.append(fila)
             tabla.insert("", tk.END, values=fila)
         conn.close()
-        print("Commit: Servicios cargados en tabla y cache.")
+
+        servicios_ordenados = shell_sort_servicios(servicios_cache, key=lambda x: x[3])
+
+        for fila in servicios_ordenados:
+            tabla.insert("", tk.END, values=fila)
+
+        print("Commit: Servicios cargados en tabla y ordenados por precio (Shell Sort).")
 
     def agregar_servicio():
         n, d, p = entry_nombre.get(), entry_desc.get(), entry_precio.get()
@@ -114,4 +136,4 @@ def ventana_servicios():
     tk.Button(ventana, text="Buscar", command=buscar_servicio, bg="#dcedc1").grid(row=4, column=3, padx=6)
 
     cargar_datos()
-    print("Commit: Ventana de Servicios inicializada.")
+    print("Commit: Ventana de Servicios inicializada con Shell Sort.")
