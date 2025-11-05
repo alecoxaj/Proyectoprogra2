@@ -57,9 +57,11 @@ def ventana_reportes():
         conn = conectar(); cur = conn.cursor()
         cur.execute("SELECT id, nombre, descripcion, precio FROM servicios")
         rows = cur.fetchall()
-        for r in rows:
-            tabla.insert("", tk.END, values=r)
         conn.close()
+        for r in rows:
+            precio_formateado = f"Q {r[3]:,.2f}"
+            tabla.insert("", tk.END, values=(r[0], r[1], r[2], precio_formateado))
+
         print("Commit: Servicios cargados para reportes.")
         return rows
 
@@ -68,39 +70,87 @@ def ventana_reportes():
         if not rows:
             messagebox.showinfo("Info", "No hay servicios para ordenar.")
             return
+
         sorted_rows = quick_sort(rows, key=lambda x: x[3])
+
         tabla.delete(*tabla.get_children())
-        print("Commit: Ordenamiento Quick Sort (recursivo) ejecutado.")
         for r in sorted_rows:
-            tabla.insert("", tk.END, values=r)
+            precio_formateado = f"Q {r[3]:,.2f}"
+            tabla.insert("", tk.END, values=(r[0], r[1], r[2], precio_formateado))
+
         messagebox.showinfo("Ordenamiento", f"Ordenamiento {alg} aplicado.")
+        print("Commit: Ordenamiento Quick Sort ejecutado y mostrado con formato de precio 'Q'.")
 
     def buscar_por_precio_binario():
         target_txt = entry_target.get().strip()
         if not target_txt:
             messagebox.showwarning("Entrada", "Ingresa precio a buscar.")
             return
+
         try:
             target = float(target_txt)
         except:
             messagebox.showerror("Error", "Precio inválido.")
             return
+
         rows = cargar_servicios()
-        sorted_rows = quick_sort(rows, key=lambda x: x[3])
+        if not rows:
+            messagebox.showinfo("Vacío", "No hay servicios disponibles.")
+            return
+
+        clean_rows = []
+        for r in rows:
+            try:
+                clean_rows.append(
+                    (r[0], r[1], r[2], float(str(r[3]).replace("Q", "").replace("Q.", "").replace(",", "").strip())))
+            except:
+                continue
+
+        sorted_rows = quick_sort(clean_rows, key=lambda x: x[3])
+
+        tabla.delete(*tabla.get_children())
+        for r in sorted_rows:
+            tabla.insert("", tk.END, values=(r[0], r[1], r[2], f"Q. {r[3]:.2f}"))
+
         idx = binary_search(sorted_rows, target, key=lambda x: x[3])
+
         if idx >= 0:
-            messagebox.showinfo("Encontrado", f"Encontrado: {sorted_rows[idx]}")
+            tabla_id = tabla.get_children()[idx]
+            tabla.selection_set(tabla_id)
+            tabla.focus(tabla_id)
+            tabla.see(tabla_id)
+            messagebox.showinfo("Encontrado", f"Servicio con precio Q. {target:.2f} encontrado.")
+            print(f"Commit: Servicio con precio {target} encontrado mediante búsqueda binaria.")
         else:
             messagebox.showinfo("No encontrado", "No existe servicio con ese precio.")
+            print(f"Commit: Búsqueda binaria no encontró el precio {target}.")
 
     def buscar_secuencial_nombre():
         key = entry_nombre.get().strip().lower()
+        if not key:
+            messagebox.showwarning("Entrada", "Ingresa nombre a buscar.")
+            return
+
         rows = cargar_servicios()
         idx = sequential_search(rows, key, key=lambda x: x[1].lower())
+
+        for item in tabla.selection():
+            tabla.selection_remove(item)
+
         if idx >= 0:
-            messagebox.showinfo("Encontrado", f"Encontrado: {rows[idx]}")
+            encontrado = rows[idx]
+            for item in tabla.get_children():
+                valores = tabla.item(item, "values")
+                if valores[1].lower() == key:
+                    tabla.selection_set(item)
+                    tabla.focus(item)
+                    tabla.see(item)
+                    print(f"Commit: búsqueda secuencial encontró '{key}'.")
+                    break
         else:
             messagebox.showinfo("No encontrado", "No existe servicio con ese nombre.")
+            print(f"Commit: búsqueda secuencial no encontró '{key}'.")
+
 
     def hashing_demo():
         rows = cargar_servicios()
