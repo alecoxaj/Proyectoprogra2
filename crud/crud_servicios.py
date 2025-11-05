@@ -59,7 +59,7 @@ def ventana_servicios():
         servicios_ordenados = shell_sort_servicios(servicios_cache, key=lambda x: x[3])
 
         for fila in servicios_ordenados:
-            tabla.insert("", tk.END, values=fila)
+            tabla.insert("", tk.END, values=(fila[0], fila[1], fila[2], f"Q. {float(fila[3]):.2f}"))
 
         print("Commit: Servicios cargados en tabla y ordenados por precio (Shell Sort).")
 
@@ -69,7 +69,7 @@ def ventana_servicios():
             messagebox.showwarning("Advertencia", "Nombre y precio son obligatorios.")
             return
         try:
-            precio_f = float(p)
+            precio_f = float(str(p).replace("Q", "").replace("Q.", "").strip())
         except:
             messagebox.showerror("Error", "El precio debe ser numérico.")
             return
@@ -100,7 +100,7 @@ def ventana_servicios():
         sid = tabla.item(sel)["values"][0]
         n, d, p = entry_nombre.get(), entry_desc.get(), entry_precio.get()
         try:
-            precio_f = float(p)
+            precio_f = float(str(p).replace("Q", "").replace("Q.", "").strip())
         except:
             messagebox.showerror("Error", "El precio debe ser numérico.")
             return
