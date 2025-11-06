@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import font as tkFont
 from PIL import Image, ImageTk
 import sqlite3
 
@@ -14,6 +15,27 @@ class LoginView:
     def __init__(self, app):
         self.app = app
         self.root = app.root
+        self.FAMILIA_FUENTE = "Montserrat"
+        self.font_titulo = tkFont.Font(
+            family=self.FAMILIA_FUENTE,
+            size=18,
+            weight="bold"
+        )
+        self.font_normal = tkFont.Font(
+            family=self.FAMILIA_FUENTE,
+            size=11
+        )
+        self.font_normal_negrita = tkFont.Font(
+            family=self.FAMILIA_FUENTE,
+            size=11,
+            weight="bold"
+        )
+        self.font_boton = tkFont.Font(
+            family=self.FAMILIA_FUENTE,
+            size=12,
+            weight="bold"
+        )
+
         self.construir_ui()
         print("Interfaz de login inicializada correctamente.")
 
@@ -32,26 +54,26 @@ class LoginView:
         login_frame.pack(expand=True)
 
         tk.Label(login_frame, text="Inicio de sesión",
-                 font=("Arial", 18, "bold"),
+                 font=self.font_titulo,
                  bg=self.COLOR_FONDO_FRAME,
                  fg=self.COLOR_TEXTO_OSCURO).pack(pady=(0, 20))
 
-        tk.Label(login_frame, text="Usuario:", font=("Arial", 11),
+        tk.Label(login_frame, text="Usuario:", font=self.font_normal_negrita,
                  bg=self.COLOR_FONDO_FRAME, fg=self.COLOR_TEXTO_OSCURO).pack(anchor="w")
-        self.entry_usuario = tk.Entry(login_frame, width=35, font=("Arial", 11),
+        self.entry_usuario = tk.Entry(login_frame, width=35, font=self.font_normal,
                                       relief="solid", bd=1)
         self.entry_usuario.pack(pady=(5, 15))
 
-        tk.Label(login_frame, text="Contraseña:", font=("Arial", 11),
+        tk.Label(login_frame, text="Contraseña:", font=self.font_normal_negrita,
                  bg=self.COLOR_FONDO_FRAME, fg=self.COLOR_TEXTO_OSCURO).pack(anchor="w")
         self.entry_contraseña = tk.Entry(login_frame, width=35, show="*",
-                                         font=("Arial", 11), relief="solid", bd=1)
+                                         font=self.font_normal, relief="solid", bd=1)
         self.entry_contraseña.pack(pady=(5, 20))
 
         btn_ingresar = tk.Button(login_frame, text="Ingresar",
                                  command=self.iniciar_sesion,
                                  bg=self.COLOR_BOTON, fg=self.COLOR_TEXTO_OSCURO,
-                                 font=("Arial", 12, "bold"),
+                                 font=self.font_boton,
                                  relief="flat", padx=30, pady=8,
                                  cursor="hand2")
         btn_ingresar.pack(pady=15)
@@ -86,6 +108,6 @@ class LoginView:
         rol = self.verificar_login(usuario, contraseña)
         if rol:
             messagebox.showinfo("Acceso concedido", f"Bienvenido al sistema ({rol})")
-            self.app.abrir_menu(rol)  # Llama al método de App
+            self.app.abrir_menu(rol)
         else:
             messagebox.showerror("Error", "Usuario o contraseña incorrectos")

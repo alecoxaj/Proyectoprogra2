@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import font as tkFont
+from PIL import Image, ImageTk
 
 from crud.crud_clientes import ventana_clientes
 from crud.crud_servicios import ventana_servicios
@@ -19,27 +21,57 @@ class MainMenuView:
         self.app = app
         self.root = app.root
         self.rol = rol
+        self.FAMILIA_FUENTE = "Montserrat"
+        self.font_titulo_menu = tkFont.Font(
+            family=self.FAMILIA_FUENTE, size=20, weight="bold"
+        )
+        self.font_subtitulo_menu = tkFont.Font(
+            family=self.FAMILIA_FUENTE, size=14
+        )
+        self.font_boton_menu = tkFont.Font(
+            family=self.FAMILIA_FUENTE, size=11, weight="bold"
+        )
 
         for widget in self.root.winfo_children():
             widget.destroy()
+        try:
+            self.root.state('zoomed')
+        except tk.TclError:
+            self.root.geometry("1200x800")
 
         self.root.config(bg=COLOR_FONDO_VENTANA)
+        self.root.logo_menu = None
+        self.root.logo_salir = None
         self.construir_menu_ui()
         print(f"MainMenuView inicializado para rol '{rol}'.")
 
     def construir_menu_ui(self):
-        tk.Label(self.root, text="MENÚ PRINCIPAL",
-                 font=("Arial", 20, "bold"),
-                 bg=COLOR_FONDO_VENTANA,
-                 fg=COLOR_TEXTO_OSCURO).pack(pady=(30, 10))
+        frame_superior = tk.Frame(self.root, bg=COLOR_FONDO_VENTANA)
+        frame_superior.pack(pady=(20, 10), fill='x')
 
-        tk.Label(self.root, text=f"Bienvenido ({self.rol})",
-                 font=("Arial", 14),
-                 bg=COLOR_FONDO_VENTANA,
-                 fg=COLOR_TEXTO_OSCURO).pack(pady=(0, 30))
+        try:
+            imagen_logo = Image.open("espacio.naranja.png").resize((120, 120))
+            self.root.logo_menu = ImageTk.PhotoImage(imagen_logo)
+            tk.Label(frame_superior, image=self.root.logo_menu, bg=COLOR_FONDO_VENTANA).pack(pady=10)
+        except Exception as e:
+            print(f"No se pudo cargar el logo en el menú: {e}")
+            tk.Label(frame_superior, text="[LOGO]", bg=COLOR_FONDO_VENTANA).pack(pady=10)
 
-        frame_menu = tk.Frame(self.root, bg=COLOR_FONDO_FRAME, padx=20, pady=20)
-        frame_menu.pack(pady=10)
+        tk.Label(frame_superior, text="MENÚ PRINCIPAL",
+                 font=self.font_titulo_menu,
+                 bg=COLOR_FONDO_VENTANA,
+                 fg=COLOR_TEXTO_OSCURO).pack(pady=(10, 5))
+
+        tk.Label(frame_superior, text=f"Bienvenido ({self.rol})",
+                 font=self.font_subtitulo_menu,
+                 bg=COLOR_FONDO_VENTANA,
+                 fg=COLOR_TEXTO_OSCURO).pack(pady=(0, 20))
+
+        contenedor_central = tk.Frame(self.root, bg=COLOR_FONDO_VENTANA)
+        contenedor_central.pack(expand=True, fill="both")
+
+        frame_menu = tk.Frame(contenedor_central, bg=COLOR_FONDO_FRAME, padx=60, pady=40)
+        frame_menu.place(relx=0.5, rely=0.50, anchor="center")
 
         if self.rol == "admin":
             opciones = [
@@ -52,39 +84,64 @@ class MainMenuView:
             ]
         else:
             opciones = [
-                ("Clientes", lambda: ClientesView(self.root)),
-                ("Agenda", lambda: AgendaView(self.root)),
-                ("Ventas", lambda: VentasView(self.root))
+                ("Clientes", lambda: ventana_clientes()),
+                ("Agenda", lambda: ventana_agenda()),
+                ("Ventas", lambda: ventana_ventas())
             ]
 
         estilo_boton = {
             "width": 25,
             "bg": COLOR_BOTON,
             "fg": COLOR_TEXTO_OSCURO,
-            "font": ("Arial", 11, "bold"),
+            "font": self.font_boton_menu,
             "relief": "flat",
             "borderwidth": 0,
-            "pady": 6,
+            "pady": 8,
             "cursor": "hand2"
         }
 
         for texto, comando in opciones:
-            tk.Button(frame_menu, text=texto, command=comando, **estilo_boton).pack(pady=5)
+            tk.Button(frame_menu, text=texto, command=comando, **estilo_boton).pack(pady=8)
 
-        tk.Button(self.root, text="Cerrar sesión",
-                  bg=COLOR_BOTON_SALIR,
-                  fg=COLOR_TEXTO_OSCURO,
-                  font=("Arial", 11, "bold"),
-                  relief="flat",
-                  borderwidth=0,
-                  padx=10,
-                  pady=6,
-                  cursor="hand2",
-                  command=self.volver_login
-                  ).pack(pady=30)
+        frame_inferior = tk.Frame(self.root, bg=COLOR_FONDO_VENTANA)
+        frame_inferior.pack(side="bottom", fill="x", pady=20)
+
+        try:
+            imagen_salir = Image.open("logo.salir.png").resize((45, 45))
+            self.root.logo_salir = ImageTk.PhotoImage(imagen_salir)
+            boton_salir = tk.Button(
+                frame_inferior,
+                image=self.root.logo_salir,
+                bg=COLOR_FONDO_VENTANA,
+                borderwidth=0,
+                cursor="hand2",
+                command=self.volver_login
+            )
+            boton_salir.pack(side="right", anchor="se", padx=30)
+        except Exception as e:
+            print(f"No se pudo cargar la imagen del botón salir: {e}")
+            tk.Button(
+                frame_inferior,
+                text="Salir",
+                bg=COLOR_BOTON_SALIR,
+                fg=COLOR_TEXTO_OSCURO,
+                font=self.font_boton_menu,
+                relief="flat",
+                borderwidth=0,
+                padx=20,
+                pady=8,
+                cursor="hand2",
+                command=self.volver_login
+            ).pack(side="right", anchor="se", padx=30)
 
     def volver_login(self):
-        from ui.login_view import LoginView
+        try:
+            from ui.login_view import LoginView
+        except ImportError:
+            messagebox.showerror("Error Crítico", "No se pudo encontrar 'ui.login_view'.")
+            return
+
+        self.root.state('normal')
         for widget in self.root.winfo_children():
             widget.destroy()
         LoginView(self.app)
