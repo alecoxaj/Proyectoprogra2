@@ -95,7 +95,7 @@ def ventana_agenda():
     entry_estado.grid(row=3, column=1, pady=6, padx=8)
 
     frame_botones = tk.Frame(ventana, bg=COLOR_FONDO_VENTANA)
-    frame_botones.pack(pady=(25, 35), padx=50, anchor="w")  # antes no tenía anchor
+    frame_botones.pack(pady=(25, 35), padx=50, anchor="w")
 
     estilo_boton = {
         "font": font_boton,
