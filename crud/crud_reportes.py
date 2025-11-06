@@ -1,178 +1,203 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, font as tkFont
 import sqlite3
+from PIL import Image, ImageTk
 
 DB_PATH = "espacio_creativo.db"
+
+COLOR_FONDO_VENTANA = "#FFF9E6"
+COLOR_FONDO_FRAME = "#FFF3C4"
+COLOR_BOTON_CARGAR = "#A7C7E7"
+COLOR_BOTON_ORDENAR = "#F0C987"
+COLOR_BOTON_HASHING = "#E1BEE7"
+COLOR_BOTON_BUSCAR = "#B6E2A1"
+COLOR_TEXTO_OSCURO = "#333333"
 
 def conectar():
     return sqlite3.connect(DB_PATH)
 
-def quick_sort(arr, key=lambda x: x):
-    if len(arr) <= 1:
-        return arr[:]
-    pivot = arr[len(arr)//2]
-    left = [x for x in arr if key(x) < key(pivot)]
-    middle = [x for x in arr if key(x) == key(pivot)]
-    right = [x for x in arr if key(x) > key(pivot)]
-    sorted_arr = quick_sort(left, key) + middle + quick_sort(right, key)
-    print("Commit: Ordenamiento Quick Sort ejecutado (recursivo).")
-    return sorted_arr
+def quick_sort(lista, key=lambda x: x):
+    if len(lista) <= 1:
+        return lista[:]
+    pivote = lista[len(lista)//2]
+    menores = [x for x in lista if key(x) < key(pivote)]
+    iguales = [x for x in lista if key(x) == key(pivote)]
+    mayores = [x for x in lista if key(x) > key(pivote)]
+    return quick_sort(menores, key) + iguales + quick_sort(mayores, key)
 
-def binary_search(sorted_list, target, key=lambda x: x):
-    lo, hi = 0, len(sorted_list)-1
+def binary_search(lista, target, key=lambda x: x):
+    lo, hi = 0, len(lista) - 1
     while lo <= hi:
-        mid = (lo+hi)//2
-        if key(sorted_list[mid]) == target:
-            print("Commit: Búsqueda binaria encontró el objetivo.")
+        mid = (lo + hi) // 2
+        if key(lista[mid]) == target:
             return mid
-        elif key(sorted_list[mid]) < target:
+        elif key(lista[mid]) < target:
             lo = mid + 1
         else:
             hi = mid - 1
-    print("Commit: Búsqueda binaria no encontró el objetivo.")
     return -1
 
-def sequential_search(lst, target, key=lambda x: x):
-    for i, item in enumerate(lst):
+def sequential_search(lista, target, key=lambda x: x):
+    for i, item in enumerate(lista):
         if key(item) == target:
-            print("Commit: Búsqueda secuencial encontró el objetivo.")
             return i
-    print("Commit: Búsqueda secuencial no encontró el objetivo.")
     return -1
 
 def ventana_reportes():
     ventana = tk.Toplevel()
     ventana.title("Reportes - Espacio Creativo")
-    ventana.geometry("760x480")
-    ventana.config(bg="#ffffff")
+    ventana.config(bg=COLOR_FONDO_VENTANA)
 
+    try:
+        ventana.state('zoomed')
+    except tk.TclError:
+        ventana.geometry("1200x800")
 
-    cols = ("id","nombre","descripcion","precio")
-    tabla = ttk.Treeview(ventana, columns=cols, show="headings", height=12)
-    for c in cols: tabla.heading(c, text=c.capitalize())
-    tabla.grid(row=3, column=0, columnspan=6, padx=10, pady=10)
+    FAMILIA_FUENTE = "Montserrat"
+    font_titulo = tkFont.Font(family=FAMILIA_FUENTE, size=18, weight="bold")
+    font_label = tkFont.Font(family=FAMILIA_FUENTE, size=11)
+    font_boton = tkFont.Font(family=FAMILIA_FUENTE, size=10, weight="bold")
+
+    frame_superior = tk.Frame(ventana, bg=COLOR_FONDO_VENTANA)
+    frame_superior.pack(fill="x", pady=(15, 10))
+
+    tk.Label(frame_superior, text="REPORTES DE SERVICIOS",
+             font=font_titulo, bg=COLOR_FONDO_VENTANA,
+             fg=COLOR_TEXTO_OSCURO).pack(pady=5)
+
+    def cerrar_reportes():
+        ventana.destroy()
+
+    try:
+        imagen_salir = Image.open("logo.salir.png").resize((40, 40))
+        icono_salir = ImageTk.PhotoImage(imagen_salir)
+        boton_salir = tk.Button(
+            frame_superior,
+            image=icono_salir,
+            bg=COLOR_FONDO_VENTANA,
+            borderwidth=0,
+            cursor="hand2",
+            command=cerrar_reportes
+        )
+        boton_salir.image = icono_salir
+        boton_salir.place(relx=0.98, rely=0.05, anchor="ne")
+    except Exception as e:
+        print(f"No se pudo cargar el icono salir: {e}")
+        tk.Button(frame_superior, text="Salir",
+                  bg="#F8D7DA", fg=COLOR_TEXTO_OSCURO,
+                  font=font_boton, relief="flat",
+                  cursor="hand2", command=cerrar_reportes
+                  ).place(relx=0.97, rely=0.05, anchor="ne")
+
+    frame_botones = tk.Frame(ventana, bg=COLOR_FONDO_FRAME, padx=25, pady=25)
+    frame_botones.pack(pady=(20, 10), padx=40, fill="x")
+
+    estilo_boton = {"font": font_boton, "width": 18, "pady": 6, "relief": "flat", "cursor": "hand2"}
 
     def cargar_servicios():
         tabla.delete(*tabla.get_children())
         conn = conectar(); cur = conn.cursor()
         cur.execute("SELECT id, nombre, descripcion, precio FROM servicios")
-        rows = cur.fetchall()
+        filas = cur.fetchall()
         conn.close()
-        for r in rows:
-            precio_formateado = f"Q {r[3]:,.2f}"
-            tabla.insert("", tk.END, values=(r[0], r[1], r[2], precio_formateado))
 
-        print("Commit: Servicios cargados para reportes.")
-        return rows
+        for f in filas:
+            tabla.insert("", "end", values=(f[0], f[1], f[2], f"Q {f[3]:,.2f}"))
+        print("Commit: Servicios cargados correctamente.")
+        return filas
 
-    def ordenar_y_mostrar(alg="Quick Sort"):
-        rows = cargar_servicios()
-        if not rows:
-            messagebox.showinfo("Info", "No hay servicios para ordenar.")
+    def ordenar_servicios():
+        filas = cargar_servicios()
+        if not filas:
+            messagebox.showinfo("Vacío", "No hay servicios para ordenar.")
             return
-
-        sorted_rows = quick_sort(rows, key=lambda x: x[3])
-
+        ordenados = quick_sort(filas, key=lambda x: x[3])
         tabla.delete(*tabla.get_children())
-        for r in sorted_rows:
-            precio_formateado = f"Q {r[3]:,.2f}"
-            tabla.insert("", tk.END, values=(r[0], r[1], r[2], precio_formateado))
+        for f in ordenados:
+            tabla.insert("", "end", values=(f[0], f[1], f[2], f"Q {f[3]:,.2f}"))
+        messagebox.showinfo("Ordenamiento", "Servicios ordenados por precio (Quick Sort).")
+        print("Commit: Ordenamiento Quick Sort aplicado en Reportes.")
 
-        messagebox.showinfo("Ordenamiento", f"Ordenamiento {alg} aplicado.")
-        print("Commit: Ordenamiento Quick Sort ejecutado y mostrado con formato de precio 'Q'.")
-
-    def buscar_por_precio_binario():
-        target_txt = entry_target.get().strip()
+    def buscar_binario():
+        target_txt = entry_precio.get().strip()
         if not target_txt:
-            messagebox.showwarning("Entrada", "Ingresa precio a buscar.")
+            messagebox.showwarning("Advertencia", "Ingresa un precio para buscar.")
             return
-
         try:
             target = float(target_txt)
-        except:
-            messagebox.showerror("Error", "Precio inválido.")
+        except ValueError:
+            messagebox.showerror("Error", "El precio ingresado no es válido.")
             return
 
-        rows = cargar_servicios()
-        if not rows:
-            messagebox.showinfo("Vacío", "No hay servicios disponibles.")
-            return
+        filas = cargar_servicios()
+        ordenadas = quick_sort(filas, key=lambda x: x[3])
+        idx = binary_search(ordenadas, target, key=lambda x: x[3])
 
-        clean_rows = []
-        for r in rows:
-            try:
-                clean_rows.append(
-                    (r[0], r[1], r[2], float(str(r[3]).replace("Q", "").replace("Q.", "").replace(",", "").strip())))
-            except:
-                continue
-
-        sorted_rows = quick_sort(clean_rows, key=lambda x: x[3])
-
-        tabla.delete(*tabla.get_children())
-        for r in sorted_rows:
-            tabla.insert("", tk.END, values=(r[0], r[1], r[2], f"Q. {r[3]:.2f}"))
-
-        idx = binary_search(sorted_rows, target, key=lambda x: x[3])
-
-        if idx >= 0:
-            tabla_id = tabla.get_children()[idx]
-            tabla.selection_set(tabla_id)
-            tabla.focus(tabla_id)
-            tabla.see(tabla_id)
-            messagebox.showinfo("Encontrado", f"Servicio con precio Q. {target:.2f} encontrado.")
-            print(f"Commit: Servicio con precio {target} encontrado mediante búsqueda binaria.")
+        if idx != -1:
+            item = tabla.get_children()[idx]
+            tabla.selection_set(item)
+            tabla.focus(item)
+            tabla.see(item)
+            messagebox.showinfo("Resultado", f"Servicio con precio Q {target:.2f} encontrado.")
+            print(f"Commit: Servicio con precio {target} encontrado (Búsqueda Binaria).")
         else:
             messagebox.showinfo("No encontrado", "No existe servicio con ese precio.")
-            print(f"Commit: Búsqueda binaria no encontró el precio {target}.")
+            print("Commit: Búsqueda binaria sin resultados.")
 
-    def buscar_secuencial_nombre():
+    def buscar_secuencial():
         key = entry_nombre.get().strip().lower()
         if not key:
-            messagebox.showwarning("Entrada", "Ingresa nombre a buscar.")
+            messagebox.showwarning("Advertencia", "Ingresa un nombre para buscar.")
             return
 
-        rows = cargar_servicios()
-        idx = sequential_search(rows, key, key=lambda x: x[1].lower())
+        filas = cargar_servicios()
+        idx = sequential_search(filas, key, key=lambda x: x[1].lower())
 
-        for item in tabla.selection():
-            tabla.selection_remove(item)
-
-        if idx >= 0:
-            encontrado = rows[idx]
-            for item in tabla.get_children():
-                valores = tabla.item(item, "values")
-                if valores[1].lower() == key:
-                    tabla.selection_set(item)
-                    tabla.focus(item)
-                    tabla.see(item)
-                    print(f"Commit: búsqueda secuencial encontró '{key}'.")
-                    break
+        if idx != -1:
+            item = tabla.get_children()[idx]
+            tabla.selection_set(item)
+            tabla.focus(item)
+            tabla.see(item)
+            print(f"Commit: Servicio '{key}' encontrado (Búsqueda Secuencial).")
         else:
             messagebox.showinfo("No encontrado", "No existe servicio con ese nombre.")
-            print(f"Commit: búsqueda secuencial no encontró '{key}'.")
-
+            print("Commit: Búsqueda secuencial sin resultados.")
 
     def hashing_demo():
-        rows = cargar_servicios()
-        hash_table = {r[1]: r for r in rows}
-        messagebox.showinfo("Hashing", f"Tabla hash creada con {len(hash_table)} servicios.")
-        print("Commit: Hash table de servicios creada correctamente.")
+        filas = cargar_servicios()
+        tabla_hash = {f[1]: f for f in filas}
+        messagebox.showinfo("Hashing", f"Tabla hash creada con {len(tabla_hash)} servicios.")
+        print("Commit: Hash Table de servicios creada exitosamente.")
 
-    tk.Button(ventana, text="Cargar servicios", command=cargar_servicios, bg="#dbeafe").grid(row=0, column=0, padx=6, pady=6)
-    tk.Button(ventana, text="Ordenar (Quick Sort)", command=ordenar_y_mostrar, bg="#f0f4c3").grid(row=0, column=1)
-    tk.Button(ventana, text="Hashing demo", command=hashing_demo, bg="#e1bee7").grid(row=0, column=2)
+    tk.Button(frame_botones, text="Cargar Servicios", bg=COLOR_BOTON_CARGAR,
+              command=cargar_servicios, **estilo_boton).pack(side="left", padx=10)
+    tk.Button(frame_botones, text="Ordenar (Quick Sort)", bg=COLOR_BOTON_ORDENAR,
+              command=ordenar_servicios, **estilo_boton).pack(side="left", padx=10)
+    tk.Button(frame_botones, text="Hashing Demo", bg=COLOR_BOTON_HASHING,
+              command=hashing_demo, **estilo_boton).pack(side="left", padx=10)
 
+    frame_buscar = tk.Frame(ventana, bg=COLOR_FONDO_VENTANA)
+    frame_buscar.pack(pady=(10, 20))
 
-    tk.Label(ventana, text="Buscar por precio (binaria):").grid(row=1, column=0, padx=6, pady=6, sticky="e")
-    entry_target = tk.Entry(ventana, width=15)
-    entry_target.grid(row=1, column=1)
-    tk.Button(ventana, text="Buscar (binaria)", command=buscar_por_precio_binario, bg="#bbdefb").grid(row=1, column=2)
+    tk.Label(frame_buscar, text="Buscar por Precio:", bg=COLOR_FONDO_VENTANA, font=font_label).grid(row=0, column=0, padx=10)
+    entry_precio = tk.Entry(frame_buscar, width=15, font=font_label)
+    entry_precio.grid(row=0, column=1, padx=10)
+    tk.Button(frame_buscar, text="Buscar (Binaria)", bg=COLOR_BOTON_BUSCAR,
+              command=buscar_binario, **estilo_boton).grid(row=0, column=2, padx=10)
 
+    tk.Label(frame_buscar, text="Buscar por Nombre:", bg=COLOR_FONDO_VENTANA, font=font_label).grid(row=1, column=0, padx=10, pady=10)
+    entry_nombre = tk.Entry(frame_buscar, width=20, font=font_label)
+    entry_nombre.grid(row=1, column=1, padx=10)
+    tk.Button(frame_buscar, text="Buscar (Secuencial)", bg=COLOR_BOTON_BUSCAR,
+              command=buscar_secuencial, **estilo_boton).grid(row=1, column=2, padx=10)
 
+    columnas = ("id", "nombre", "descripcion", "precio")
+    tabla = ttk.Treeview(ventana, columns=columnas, show="headings", height=14)
+    tabla.pack(fill="both", expand=True, pady=10, padx=20)
 
-    tk.Label(ventana, text="Buscar por nombre (secuencial):").grid(row=2, column=0, sticky="e")
-    entry_nombre = tk.Entry(ventana, width=20)
-    entry_nombre.grid(row=2, column=1)
-    tk.Button(ventana, text="Buscar (secuencial)", command=buscar_secuencial_nombre, bg="#c8e6c9").grid(row=2, column=2)
+    for col in columnas:
+        tabla.heading(col, text=col.capitalize())
+        tabla.column(col, anchor="center")
 
-    print("Commit: Ventana de Reportes inicializada con Quick Sort, búsquedas y hashing.")
+    cargar_servicios()
+    print("Commit: Ventana de Reportes abierta con interfaz moderna y coherente.")
