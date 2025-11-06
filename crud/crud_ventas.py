@@ -50,7 +50,10 @@ def ventana_ventas():
             ventas = bubble_sort_ventas(ventas, key=lambda x: x[4])
 
         for f in ventas:
-            tabla.insert("", tk.END, values=f)
+            id_, cliente_id, servicio_id, fecha, total = f
+            total_formateado = f"Q. {float(total):.2f}"
+            tabla.insert("", tk.END, values=(id_, cliente_id, servicio_id, fecha, total_formateado))
+
         print("Commit: Ventas cargadas (ordenadas por total)." if ordenar else "Commit: Ventas cargadas desde BD.")
 
     def encolar_venta():
